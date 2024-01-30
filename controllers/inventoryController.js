@@ -18,3 +18,19 @@ exports.createInventory = async (req, res, next) => {
     }
 
 }
+
+//Get an Inventory --------------- ADMIN
+
+exports.getInventory = async (req, res, next) => {
+    try {
+        const inventory = await Inventory.find();
+        res.status(200).json({
+            success: true,
+            inventory
+        })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: "Something went wrong" });
+    }
+}

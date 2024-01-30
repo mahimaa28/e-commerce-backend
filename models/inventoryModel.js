@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const inventorySchema = new mongoose.Schema({
-    product: {
+    productCategory: {
         // type: mongoose.Schema.Types.ObjectId,
         type: String,
         // ref: 'Product',
@@ -25,11 +25,11 @@ const inventorySchema = new mongoose.Schema({
         default: Date.now(),
     },
     minimumStock: {
-        type: Number,
+        type: Number, // Minimum stock to be ordered
         default: 0,
     },
-    maximumStock: {
-        type: Number,
+    currentStock: {
+        type: Number, // Available stock
         default: 0,
     },
     reorderQuantity: {
