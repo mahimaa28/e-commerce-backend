@@ -39,12 +39,36 @@ exports.getAllProducts = async (req, res) => {
     }
 }
 
+//Get Product Details ----------------
+
+exports.getProductDetails = async (req, res, next) => {
+    try {
+        const product = await Product.findOne({ _id: req.params.id });
+        if (!product) {
+            return res.status(500).json({
+                success: false,
+                message: "Product not found"
+            })
+        }
+        res.status(200).json({
+            success: true,
+            product
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+        })
+    }
+}
 
 //Update Product ----------------- ADMIN 
 
 exports.updateProduct = async (req, res, next) => {
     try {
-        const {name, description, price, images, category, stock, createdAt, updatedAt} = req.body;
+        const { name, description, price, images, category, stock, createdAt, updatedAt } = req.body;
         // const {rating, numOfReviews, reviews} = req.body;
         let product = await Product.findOne({ _id: req.params.id });
         if (!product) {
