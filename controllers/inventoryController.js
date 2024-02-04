@@ -1,4 +1,5 @@
 const Inventory = require("../models/inventoryModel");
+const ApiFeatures = require("../utils/api-features");
 
 
 
@@ -23,7 +24,9 @@ exports.createInventory = async (req, res, next) => {
 
 exports.getInventory = async (req, res, next) => {
     try {
-        const inventory = await Inventory.find();
+        const apiFeature = new ApiFeatures(Inventory.find(), req.query.keyword).search();
+        const inventory = await apiFeature.query;
+        //    const inventory = await Inventory.find();
         res.status(200).json({
             success: true,
             inventory

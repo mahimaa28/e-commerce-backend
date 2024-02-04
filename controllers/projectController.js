@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const ApiFeatures = require("../utils/api-features");
 
 
 
@@ -25,7 +26,19 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        // const apiFeature = new ApiFeatures(Product.find(), req.query.keyword).search();
+        // const products = await apiFeature.query;
+
+        //search function for products... //better to use the class cuz the same would needed in inventory too.but for now just adding up the loc for understanding.
+        const keyword =await req.query.keyword ? {
+            name: {
+                $regex:  req.query.keyword,
+                $options: "i", // case insensitive
+            }
+        }:{};
+        console.log(keyword);
+        const products = await Product.find({...keyword});
+
         res.status(200).json({
             success: true,
             products
