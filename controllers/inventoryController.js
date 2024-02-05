@@ -1,5 +1,5 @@
 const Inventory = require("../models/inventoryModel");
-const ApiFeatures = require("../utils/api-features");
+
 
 
 
@@ -24,9 +24,41 @@ exports.createInventory = async (req, res, next) => {
 
 exports.getInventory = async (req, res, next) => {
     try {
-        const apiFeature = new ApiFeatures(Inventory.find(), req.query.keyword).search();
-        const inventory = await apiFeature.query;
-        //    const inventory = await Inventory.find();
+        //search function for inventory...
+        const keyword = await req.query.keyword ? {
+            productCategory: {
+                $regex: req.query.keyword,
+                $options: "i", // case insensitive
+            }
+        } : {};
+        //filter by selling price and costing price...
+        const filter = {};
+        // if (req.query.category) {
+        //     filter.productCategory = req.query.category;
+        // }
+
+        if (req.query.minCostPrice) {
+            filter.costPrice = { ...filter.costPrice, $gte: parseInt(req.query.minCostPrice) };
+        }
+
+        if (req.query.maxCostPrice) {
+            filter.costPrice = { ...filter.costPrice, $lte: parseInt(req.query.maxCostPrice) };
+        }
+
+        if (req.query.minSellingPrice) {
+            filter.sellingPrice = { ...filter.sellingPrice, $gte: parseInt(req.query.minSellingPrice) };
+        }
+
+        if (req.query.maxSellingPrice) {
+            filter.sellingPrice = { ...filter.sellingPrice, $lte: parseInt(req.query.maxSellingPrice) };
+        }
+
+        console.log({ ...keyword });
+        //pagination...
+        const resultPerPage = 5;
+        const currentPage = parseInt(req.query.page) || 1;
+        const skip = resultPerPage * (currentPage - 1);
+        const inventory = await Inventory.find({ ...keyword, ...filter }).limit(resultPerPage).skip(skip);
         res.status(200).json({
             success: true,
             inventory
