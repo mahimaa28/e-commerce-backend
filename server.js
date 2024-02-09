@@ -2,8 +2,12 @@ const app = require("./app");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDatabase = require("./config/database");
-const PORT = 4000 || process.env.PORT;
 
+// Config
+
+dotenv.config({ path: "config/config.env" });
+
+const PORT = 4000 || process.env.PORT;
 
 const corsOptions = {
     "origin": "*",
@@ -13,10 +17,6 @@ const corsOptions = {
   }
 
 app.use(cors(corsOptions));
-
-// Config
-
-dotenv.config({ path: "config/config.env" });
 
 // Connecting to database and starting the server
 
