@@ -55,7 +55,7 @@ exports.loginUser = async (req, res, next) => {
     }
 }
 
-//Logout User  ------------- hi 
+//Logout User  ------------- hi bye
 exports.logoutUser = async (req, res, next) => {
     try {
         res.cookie("token", null, {
