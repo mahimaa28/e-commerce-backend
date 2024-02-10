@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const sendToken = require("../utils/jwtToken");
+const sendMail = require("../services/emailServices");
 
 
 
@@ -20,8 +21,25 @@ exports.registerUser = async (req, res, next) => {
                 url: "tmpProfilePicUrl",
             }
         });
+        sendMail(
+            {
+            from: "EcommXpress@gmail.com",
+            to: user.email,
+            subject: 'Created Your Account',
+            text: `Greetings from `,
+            html: require('../services/emailTemplate')({
+                        message:`WELCOME TO ECOMM EXPRESS ${firstName}`
 
-        sendToken(user, 201, res);
+                  })
+                 
+          }).then(() => {
+            return res.status(201).json({"success": true, "message": "email has been sent, user has been created", data: user});
+            
+          }).catch(error => {
+            console.log(error);
+            return res.status(500).json({error: 'Error in email sending.'});
+        });
+        console.log(user.email);
     }
     catch (err) {
         console.log(err);
