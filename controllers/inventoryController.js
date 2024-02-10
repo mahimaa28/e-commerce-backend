@@ -36,7 +36,9 @@ exports.getInventory = async (req, res, next) => {
         // if (req.query.category) {
         //     filter.productCategory = req.query.category;
         // }
-
+        if (req.query.costPrice) {
+            filter.costPrice = req.query.costPrice;;
+        }
         if (req.query.minCostPrice) {
             filter.costPrice = { ...filter.costPrice, $gte: parseInt(req.query.minCostPrice) };
         }
@@ -54,14 +56,17 @@ exports.getInventory = async (req, res, next) => {
         }
 
         console.log({ ...keyword });
+        console.log({...filter})
         //pagination...
         const resultPerPage = 5;
+        const inventoryCount = await Inventory.countDocuments();
         const currentPage = parseInt(req.query.page) || 1;
         const skip = resultPerPage * (currentPage - 1);
         const inventory = await Inventory.find({ ...keyword, ...filter }).limit(resultPerPage).skip(skip);
         res.status(200).json({
             success: true,
-            inventory
+            inventory,
+            inventoryCount,
         })
     }
     catch (err) {
