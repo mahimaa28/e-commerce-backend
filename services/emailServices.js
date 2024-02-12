@@ -1,5 +1,6 @@
 "use strict";
 const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 // const transporter = nodemailer.createTransport({
 //   host: "smtp-relay.brevo.com ",
@@ -36,7 +37,7 @@ const nodemailer = require("nodemailer");
 
 // module.exports = main;
 
-module.exports = async ({from, to, subject, text, html}) => {
+module.exports = async ({ from, to, subject, text, html }) => {
     let transporter = nodemailer.createTransport({
         host: "smtp-relay.brevo.com",
         port: 587,
@@ -48,19 +49,12 @@ module.exports = async ({from, to, subject, text, html}) => {
 
     });
 
-    console.log("mail will be send to ", to);
-
-    console.log("half done");
-
-
     const info = await transporter.sendMail({
         from: `Ecomm <${from}>`, // sender address
         to: to, // list of receivers
         subject: subject, // Subject line
-        text: text, // plain text body
+        text:  text, // plain text body
         html: html, // html body
     });
-
-    console.log("full done");
     console.log(info);
 }

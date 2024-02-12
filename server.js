@@ -5,7 +5,7 @@ const connectDatabase = require("./config/database");
 
 // Config
 
-dotenv.config({ path: "config/config.env" });
+dotenv.config({ path: "./config.env" });
 
 const PORT = 4000 || process.env.PORT;
 
