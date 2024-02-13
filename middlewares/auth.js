@@ -33,7 +33,7 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 exports.authorizedRoles =  (req, res, next) => {
     console.log(`${req.user.role} yaaaaarrrrr`)
         // Check if the user's role is in the authorized roles array
-        if (req.user.role !== "admin ") {
+        if (req.user.role !== "admin") {
             console.log("ruivbefuivbfeoub")
             return res.status(401).json({ success: false, message: "You are not authorized to access this resource" });
         }
