@@ -10,6 +10,7 @@ dotenv.config({ path: "./config.env" });
 const PORT = 4000 || process.env.PORT;
 
 const corsOptions = {
+  "Access-Control-Allow-Origin": "*",
   origin: "*",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
