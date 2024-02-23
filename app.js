@@ -13,11 +13,13 @@ const product = require("./routes/productRoute");
 const inventory = require("./routes/inventoryRoute");
 const user = require("./routes/userRoute");
 const comment = require("./routes/commentRoute");
+const rating = require("./routes/ratingRoute");
 
 // routes ---------------------
 app.use("/api/v1/product", product);
 app.use("/api/v1/inventory", isAuthenticatedUser, authorizedRoles, inventory);
 app.use("/api/v1/user", user);
 app.use("/api/v1/comment", comment);
+app.use("/api/v1/rating", rating);
 
 module.exports = app;
