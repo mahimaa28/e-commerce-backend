@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../services/emailServices");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 //Register an User -------------------
@@ -46,13 +47,11 @@ exports.registerUser = async (req, res, next) => {
       }),
     })
       .then(() => {
-        return res
-          .status(201)
-          .json({
-            success: true,
-            message: "email has been sent, user has been created",
-            data: user,
-          });
+        return res.status(201).json({
+          success: true,
+          message: "email has been sent, user has been created",
+          data: user,
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -95,12 +94,10 @@ exports.loginUser = async (req, res, next) => {
     //checking if user has given password and email both
     if (!email || !password) {
       return next(
-        res
-          .status(400)
-          .json({
-            success: false,
-            message: "Invalid req, please enter email and password",
-          })
+        res.status(400).json({
+          success: false,
+          message: "Invalid req, please enter email and password",
+        })
       ); //Bad req
     }
     const user = await User.findOne({ email }).select("+password");
@@ -142,5 +139,102 @@ exports.logoutUser = async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+//Reset password
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    // const { email } = req.user.email;
+    // console.log(req.body);
+    // const user = await User.findOne({ email: req.body.email });
+    // console.log(user);
+    // if (!user) {
+    //   return res.status(404).json({ message: "User not found" });
+    // }
+
+    // // Generate and store password reset token
+    // const token = crypto.randomBytes(20).toString("hex");
+    // user.resetPasswordToken = token;
+    // user.resetPasswordExpire = Date.now() + 3600000; // Token expires in 1 hour
+    // await user.save({ validateBeforeSave: false });
+
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(400).json({ error: "user does not exist" });
+    }
+    //Get reset password token
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    //req.protocol , req.get("host")
+    const resetPasswordUrl = `http://localhost:4000/api/v1/user/password/reset/${resetToken}`;
+    sendMail({
+      from: "EcommXpress@gmail.com",
+      to: req.body.email,
+      subject: "Reset Password Token",
+      text: `Hi! There, You have recently visited  
+                our website and entered your email.`,
+      html: require("../services/emailTemplate")({
+        message: `Your reset password token is \n\n ${resetPasswordUrl} \n\n`,
+      }),
+    })
+      .then(() => {
+        return res.status(200).json({
+          success: true,
+          message: `email has been sent to ${user.email}, reset your password`,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(500).json({ error: "Error in email sending." });
+      });
+  } catch (err) {
+    User.resetPasswordToken = undefined;
+    User.resetPasswordExpire = undefined;
+
+    await User.save({ validateBeforeSave: false });
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
+  }
+};
+
+//reset Password, changing password
+exports.resetPassword = async (req, res, next) => {
+  try {
+    //creating token hash
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "reset password token is invalid" });
+    }
+
+    if (req.body.password !== req.body.confirmPassword) {
+      return res
+        .status(400)
+        .json({ error: "password doesn't match, please confirm" });
+    }
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+    sendToken(user, 200, res);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
   }
 };

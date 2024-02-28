@@ -4,6 +4,7 @@ const Product = require("../models/productModel");
 
 exports.createProduct = async (req, res, next) => {
   try {
+    req.body.user = req.user.id;
     const product = await Product.create(req.body);
     res.status(201).json({
       success: true,
@@ -42,14 +43,6 @@ exports.getAllProducts = async (req, res) => {
 
     if (req.query.maxPrice) {
       filter.price = { ...filter.price, $lte: parseInt(req.query.maxPrice) };
-    }
-
-    if (req.query.minRating) {
-      filter.rating = { ...filter.rating, $gte: parseInt(req.query.minRating) };
-    }
-
-    if (req.query.maxRating) {
-      filter.rating = { ...filter.rating, $lte: parseInt(req.query.maxRating) };
     }
 
     //pagination...

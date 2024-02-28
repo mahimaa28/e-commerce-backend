@@ -47,6 +47,10 @@ const productSchema = new mongoose.Schema({
     ref: "Comments",
     default: 0,
   },
+  addedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
