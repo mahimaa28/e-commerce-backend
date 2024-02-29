@@ -146,20 +146,6 @@ exports.logoutUser = async (req, res, next) => {
 //Reset password
 exports.forgotPassword = async (req, res, next) => {
   try {
-    // const { email } = req.user.email;
-    // console.log(req.body);
-    // const user = await User.findOne({ email: req.body.email });
-    // console.log(user);
-    // if (!user) {
-    //   return res.status(404).json({ message: "User not found" });
-    // }
-
-    // // Generate and store password reset token
-    // const token = crypto.randomBytes(20).toString("hex");
-    // user.resetPasswordToken = token;
-    // user.resetPasswordExpire = Date.now() + 3600000; // Token expires in 1 hour
-    // await user.save({ validateBeforeSave: false });
-
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).json({ error: "user does not exist" });
@@ -297,33 +283,38 @@ exports.updateUser = async (req, res, next) => {
       phoneNumber,
       dateOfBirth,
       gender,
-    } = req.user;
-    let user = await User.findOne(req.user._id);
-    console.log(user);
+      cart,
+      wishlist,
+      orders,
+    } = req.body;
+
+    // Find the user by ID
+    let user = await User.findById(req.user._id);
+
     if (!user) {
       return res.status(400).json({
         success: false,
         message: "User not found",
       });
     }
+
+    // Update user fields
     user.firstName = firstName;
     user.lastName = lastName;
-    user.avatar.url = avatar.url;
-    user.address.street = address.street;
-    user.address.city = address.city;
-    user.address.state = address.state;
-    user.address.postalCode = address.postalCode;
-    user.address.country = address.country;
+    user.avatar = avatar;
+    user.address = address;
     user.phoneNumber = phoneNumber;
     user.dateOfBirth = dateOfBirth;
     user.gender = gender;
+    user.cart = cart;
+    user.wishlist = wishlist;
+    user.orders = orders;
 
+    // Save the updated user
+    console.log(user);
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      user,
-    });
+    sendToken(user, 200, res);
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
