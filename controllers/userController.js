@@ -145,60 +145,41 @@ exports.logoutUser = async (req, res, next) => {
 //Reset password
 exports.forgotPassword = async (req, res, next) => {
   try {
-    // const { email } = req.user.email;
-    // console.log(req.body);
-    // const user = await User.findOne({ email: req.body.email });
-    // console.log(user);
-    // if (!user) {
-    //   return res.status(404).json({ message: "User not found" });
-    // }
-
-    // // Generate and store password reset token
-    // const token = crypto.randomBytes(20).toString("hex");
-    // user.resetPasswordToken = token;
-    // user.resetPasswordExpire = Date.now() + 3600000; // Token expires in 1 hour
-    // await user.save({ validateBeforeSave: false });
-
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(400).json({ error: "user does not exist" });
+      return res.status(400).json({ error: "User does not exist" });
     }
-    //Get reset password token
-    const resetToken = user.getResetPasswordToken();
 
+    // Generate and store password reset token
+    const resetToken = user.getResetPasswordToken();
     await user.save({ validateBeforeSave: false });
 
-    //req.protocol , req.get("host")
-    const resetPasswordUrl = `http://localhost:4000/api/v1/user/password/reset/${resetToken}`;
+    // Construct reset password URL
+    const resetPasswordUrl = `http://localhost:3000/reset-password/${resetToken}`;
+
+    // Send email with reset password link
     sendMail({
       from: "EcommXpress@gmail.com",
       to: req.body.email,
       subject: "Reset Password Token",
-      text: `Hi! There, You have recently visited  
-                our website and entered your email.`,
+      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetPasswordUrl}\n\n`,
       html: require("../services/emailTemplate")({
-        message: `Your reset password token is \n\n ${resetPasswordUrl} \n\n`,
+        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br><a href="${resetPasswordUrl}">Reset Password</a><br><br>`,
       }),
     })
       .then(() => {
         return res.status(200).json({
           success: true,
-          message: `email has been sent to ${user.email}, reset your password`,
+          message: `An email has been sent to ${user.email} with instructions to reset your password`,
         });
       })
       .catch((error) => {
         console.log(error);
-        return res.status(500).json({ error: "Error in email sending." });
+        return res.status(500).json({ error: "Error sending email" });
       });
   } catch (err) {
-    User.resetPasswordToken = undefined;
-    User.resetPasswordExpire = undefined;
-
-    await User.save({ validateBeforeSave: false });
-    console.log(err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Something went wrong" });
+    console.error(err);
+    return res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
