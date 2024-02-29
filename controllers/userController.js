@@ -109,7 +109,7 @@ exports.loginUser = async (req, res, next) => {
           .json({ success: false, message: "Invalid email or password" })
       ); //unauth req
     }
-    const isPasswordMatched = user.comparePassword(password);
+    const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
       return next(
         res
@@ -117,6 +117,7 @@ exports.loginUser = async (req, res, next) => {
           .json({ success: false, message: "Invalid email or password" })
       ); //unauth req
     }
+    console.log(isPasswordMatched);
     sendToken(user, 200, res);
   } catch (err) {
     console.log(err.message);
