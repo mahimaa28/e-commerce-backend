@@ -180,7 +180,9 @@ exports.forgotPassword = async (req, res, next) => {
       });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ success: false, message: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
   }
 };
 
@@ -214,6 +216,9 @@ exports.resetPassword = async (req, res, next) => {
     await user.save();
     sendToken(user, 200, res);
   } catch (err) {
+    User.resetPasswordToken = undefined;
+    User.resetPasswordExpire = undefined;
+    await User.save({ validateBeforeSave: false });
     console.log(err);
     return res
       .status(500)
