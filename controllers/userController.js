@@ -91,6 +91,7 @@ exports.verifyUser = async (req, res, next) => {
 exports.loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     //checking if user has given password and email both
     if (!email || !password) {
       return next(
@@ -101,7 +102,7 @@ exports.loginUser = async (req, res, next) => {
       ); //Bad req
     }
     const user = await User.findOne({ email }).select("+password");
-
+    console.log(user);
     if (!user) {
       return next(
         res
@@ -286,45 +287,45 @@ exports.updatePassword = async (req, res, next) => {
 };
 
 // update user
-// exports.updateUser = async (req, res, next) => {
-//   try {
-//     const {
-//       firstName,
-//       lastName,
-//       avatar,
-//       address,
-//       phoneNumber,
-//       dateOfBirth,
-//       gender,
-//     } = req.user;
-//     let user = await User.findOne(req.user._id);
-//     console.log(user);
-//     if (!user) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-//     user.firstName = firstName;
-//     user.lastName = lastName;
-//     user.avatar.url = avatar.url;
-//     user.address.street = address.street;
-//     user.address.city = address.city;
-//     user.address.state = address.state;
-//     user.address.postalCode = address.postalCode;
-//     user.address.country = address.country;
-//     user.phoneNumber = phoneNumber;
-//     user.dateOfBirth = dateOfBirth;
-//     user.gender = gender;
+exports.updateUser = async (req, res, next) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      avatar,
+      address,
+      phoneNumber,
+      dateOfBirth,
+      gender,
+    } = req.user;
+    let user = await User.findOne(req.user._id);
+    console.log(user);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.avatar.url = avatar.url;
+    user.address.street = address.street;
+    user.address.city = address.city;
+    user.address.state = address.state;
+    user.address.postalCode = address.postalCode;
+    user.address.country = address.country;
+    user.phoneNumber = phoneNumber;
+    user.dateOfBirth = dateOfBirth;
+    user.gender = gender;
 
-//     await user.save();
+    await user.save();
 
-//     res.status(200).json({
-//       success: true,
-//       user,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//     res.status(500).json({ success: false, message: "Something went wrong" });
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};

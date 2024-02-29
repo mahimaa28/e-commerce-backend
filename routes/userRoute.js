@@ -21,6 +21,6 @@ router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/updatePassword").put(isAuthenticatedUser, updatePassword);
-// router.route("/updateUser").put(isAuthenticatedUser, updateUser);
+router.route("/updateUser").put(isAuthenticatedUser, updateUser);
 
 module.exports = router;
