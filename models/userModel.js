@@ -45,6 +45,58 @@ const userSchema = new mongoose.Schema({
       // required: true
     },
   },
+  // address: {
+  //   street: {
+  //     type: String,
+  //     // required: true
+  //   },
+  //   city: {
+  //     type: String,
+  //     // required: true
+  //   },
+  //   state: {
+  //     type: String,
+  //     // required: true
+  //   },
+  //   postalCode: {
+  //     type: String,
+  //     // required: true
+  //   },
+  //   country: {
+  //     type: String,
+  //     // required: true
+  //   },
+  // },
+  // phoneNumber: {
+  //   type: String,
+  //   // required: true
+  // },
+  // dateOfBirth: {
+  //   type: Date,
+  //   // required: true
+  // },
+  // gender: {
+  //   type: String,
+  //   enum: ["male", "female", "other"],
+  // },
+  // cart: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Cart",
+  //   },
+  // ],
+  // wishlist: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Product",
+  //   },
+  // ],
+  // orders: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "Order",
+  //   },
+  // ],
 
   resetPasswordToken: String,
   resetPasswordExpire: Date,
