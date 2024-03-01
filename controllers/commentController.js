@@ -3,7 +3,7 @@ const Comments = require("../models/commentModel");
 exports.addComment = async (req, res, next) => {
   try {
     let { user, product, content } = req.body;
-    const comment = new Comment({ user, product, content });
+    const comment = new Comments({ user, product, content });
     await comment.save();
     res.status(201).json({
       success: true,
@@ -117,7 +117,7 @@ exports.updateComment = async (req, res, next) => {
 exports.deleteComment = async (req, res, next) => {
   try {
     const { commentId } = req.params;
-    await Comment.findByIdAndDelete({ _id: commentId });
+    await Comments.findByIdAndDelete({ _id: commentId });
     res.status(200).json({ success: true, message: "Comment deleted" });
   } catch (err) {
     console.log(err);
