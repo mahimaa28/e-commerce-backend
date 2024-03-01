@@ -125,7 +125,7 @@ exports.loginUser = async (req, res, next) => {
   }
 };
 
-//Logout User  ------------- hi bye
+//Logout User  -------------
 exports.logoutUser = async (req, res, next) => {
   try {
     res.cookie("token", null, {
@@ -315,6 +315,40 @@ exports.updateUser = async (req, res, next) => {
     await user.save();
 
     sendToken(user, 200, res);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+//get users -----------Admin
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    const totalUsers = await User.countDocuments();
+
+    res.status(200).json({
+      success: true,
+      users,
+      totalUsers,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+//get single user details -----------Admin
+exports.userDetails = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(400).json({ error: "something went wrong" });
+    }
+    res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
