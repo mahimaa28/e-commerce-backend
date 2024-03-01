@@ -4,12 +4,12 @@ const jwt = require("jsonwebtoken");
 
 module.exports = async ({ from, to, subject, text, html }) => {
   let transporter = nodemailer.createTransport({
-    host: "smtp-relay.brevo.com",
-    port: 587,
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: "patelmahimaa28@gmail.com", // generated ethereal user
-      pass: "gGdtrhzvE8CVFY6s", // generated ethereal password
+      user: process.env.USER_EMAIL, // generated ethereal user
+      pass: process.env.PASS, // generated ethereal password
     },
   });
 
