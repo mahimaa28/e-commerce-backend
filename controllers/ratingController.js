@@ -3,7 +3,7 @@ const Rating = require("../models/ratingModel");
 const addRating = async (req, res, next) => {
   try {
     const rating = await Rating.create(req.body);
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       rating,
     });
