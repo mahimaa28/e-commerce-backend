@@ -3,6 +3,7 @@ const Comments = require("../models/commentModel");
 exports.addComment = async (req, res, next) => {
   try {
     let { user, product, content } = req.body;
+    console.log(req.body);
     const comment = new Comments({ user, product, content });
     await comment.save();
     res.status(201).json({
@@ -10,16 +11,16 @@ exports.addComment = async (req, res, next) => {
       comment,
     });
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
 exports.getAllComments = async (req, res, next) => {
   try {
-    let { userId, searchQuery, sortBy, sortOrder, page, limit, productId } =
+    let { user, searchQuery, sortBy, sortOrder, page, limit, product } =
       req.query;
-    userId = userId || "";
+    user = user || "";
     searchQuery = searchQuery || "";
     sortBy = sortBy || "";
     sortOrder = sortOrder || "asc";
@@ -29,13 +30,13 @@ exports.getAllComments = async (req, res, next) => {
     let query = {};
 
     // If userId is provided, add it to the query
-    if (userId) {
-      query.userId = userId;
+    if (user) {
+      query.user = user;
     }
 
     // If productId is provided, add it to the query
-    if (productId) {
-      query.productId = productId;
+    if (product) {
+      query.product = product;
     }
 
     // If there's a search query, add it to the query
@@ -60,8 +61,8 @@ exports.getAllComments = async (req, res, next) => {
     }
 
     const comments = await Comments.find(query)
-      .populate("productId")
-      .populate("userId")
+      .populate("product")
+      .populate("user")
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
@@ -81,8 +82,8 @@ exports.viewComment = async (req, res, next) => {
   try {
     const { commentId } = req.params;
     const comment = await Comments.findOne({ _id: commentId })
-      .populate("productId")
-      .populate("userId");
+      .populate("product")
+      .populate("user");
     res.status(200).json({
       success: true,
       comment,

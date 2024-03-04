@@ -15,8 +15,8 @@ const addRating = async (req, res, next) => {
 
 const getAllRating = async (req, res, next) => {
   try {
-    let { userId, searchQuery, sortBy, sortOrder, page, limit } = req.query;
-    userId = userId || "";
+    let { user, searchQuery, sortBy, sortOrder, page, limit } = req.query;
+    user = user || "";
     searchQuery = searchQuery || "";
     sortBy = sortBy || "";
     sortOrder = sortOrder || "asc";
@@ -28,8 +28,8 @@ const getAllRating = async (req, res, next) => {
     let query = {};
 
     // If userId is provided, add it to the query
-    if (userId) {
-      query.userId = userId;
+    if (user) {
+      query.user = user;
     }
 
     // If there's a search query, add it to the query
@@ -37,7 +37,7 @@ const getAllRating = async (req, res, next) => {
       query.$or = [
         { "productId.name": { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on product name
         { star: { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on comment text
-        { "userId.name": { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on user name
+        { "user.name": { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on user name
       ];
     }
 
@@ -49,8 +49,8 @@ const getAllRating = async (req, res, next) => {
     }
 
     const ratings = await Rating.find(query)
-      .populate("productId")
-      .populate("userId")
+      .populate("product")
+      .populate("user")
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
@@ -73,8 +73,8 @@ const viewRating = async (req, res, next) => {
   try {
     const { ratingId, productId } = req.params;
     const rating = await Rating.findOne({ _id: ratingId, productId })
-      .populate("userId")
-      .populate("productId");
+      .populate("user")
+      .populate("product");
     res.status(200).json({
       success: true,
       rating,
