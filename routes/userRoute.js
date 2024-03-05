@@ -11,11 +11,13 @@ const {
   updatePassword,
   userDetails,
   getUsers,
+  preVerifyUser,
 } = require("../controllers/userController");
 const { isAuthenticatedUser, authorizedRoles } = require("../middlewares/auth");
 const router = express.Router();
 
 router.route("/registerUser").post(registerUser);
+router.route("/verifyUser").post(preVerifyUser);
 router.route("/verifyUser/:token").get(verifyUser);
 router.route("/loginUser").post(loginUser);
 router.route("/logoutUser").get(logoutUser);

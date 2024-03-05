@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
     default: "user",
   },
   email: {
@@ -76,6 +75,7 @@ const userSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
+
   // createdAt: {
   //   type: Date,
   //   default: Date.now(),
@@ -84,6 +84,7 @@ const userSchema = new mongoose.Schema({
   //   type: Date,
   //   default: new Date(),
   // },
+
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

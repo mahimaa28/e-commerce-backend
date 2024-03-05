@@ -26,24 +26,18 @@ exports.registerUser = async (req, res, next) => {
         url: "tmpProfilePicUrl",
       },
     });
-    const token = jwt.sign(
-      {
-        data: "Token Data",
-      },
-      "ourSecretKey",
-      { expiresIn: "10m" }
-    );
     sendMail({
       from: "EcommXpress@gmail.com",
       to: user.email,
       subject: "Created Your Account",
-      text: `Hi! There, You have recently visited  
-                our website and entered your email.`,
+      text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you join our community.\n\n
+      \nIf you have any questions or need assistance, feel free to reach out to our support team.
+      \n\nThanks,
+      \nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
-        message: `WELCOME TO ECOMM EXPRESS ${firstName},
-                    Please follow the given link to verify your email 
-                    http://localhost:4000/api/v1/user/verifyUser/${token}  
-                    Thanks`,
+        message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you join our community.
+        <br><br>Get started with your new account:<br><br>If you have any questions or need assistance, feel free to reach out to our support team.
+        <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
     })
       .then(() => {
@@ -55,7 +49,7 @@ exports.registerUser = async (req, res, next) => {
       })
       .catch((error) => {
         console.log(error);
-        return res.status(500).json({ error: "Error in email sending." });
+        return res.status(500).json({ error: "Error in sending email." });
       });
     console.log(user.email);
   } catch (err) {
@@ -64,6 +58,68 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
+//PreVerification of an user -----------------
+exports.preVerifyUser = async (req, res, next) => {
+  try {
+    const { firstName, email } = req.body;
+
+    const c1 = await User.findOne({ email });
+    if (c1) {
+      return res
+        .status(500)
+        .json({ success: false, message: "something went wrong" });
+    }
+
+    // const user = await User.create({
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   password,
+    //   avatar: {
+    //     public_id: "tmp sample id",
+    //     url: "tmpProfilePicUrl",
+    //   },
+    // });
+    const token = jwt.sign(
+      {
+        data: "Token Data",
+      },
+      "ourSecretKey",
+      { expiresIn: "10m" }
+    );
+    sendMail({
+      from: "EcommXpress@gmail.com",
+      to: email,
+      subject: "Verify Your Email",
+      text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you.
+      \n\nPlease follow the link below to verify your email and get started with your new account:
+      \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
+      \n\nIf you have any questions or need assistance, feel free to reach out to our support team.
+      \n\nThanks,\nThe Ecomm Express Team`,
+      html: require("../services/emailTemplate")({
+        message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you.
+        <br><br>Please follow the link below to verify your email and get started with your new account:
+        <br><br><a href="http://localhost:4000/api/v1/user/verifyUser/${token}">Verify Email</a>
+        <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
+        <br><br>Thanks,<br>The Ecomm Express Team`,
+      }),
+    })
+      .then(() => {
+        return res.status(201).json({
+          success: true,
+          message: "email has been sent, user has been verified",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.status(500).json({ error: "Error in sending email." });
+      });
+    console.log(email);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
 //Verify an user ----------------
 exports.verifyUser = async (req, res, next) => {
   try {
