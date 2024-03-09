@@ -27,16 +27,12 @@ exports.getAllComments = async (req, res, next) => {
     page = parseInt(page) || 1;
     limit = parseInt(limit) || 10;
 
+    const productId = req.params;
     let query = {};
 
     // If userId is provided, add it to the query
     if (user) {
       query.user = user;
-    }
-
-    // If productId is provided, add it to the query
-    if (product) {
-      query.product = product;
     }
 
     // If there's a search query, add it to the query
@@ -47,10 +43,6 @@ exports.getAllComments = async (req, res, next) => {
       ];
     }
 
-    const totalComments = await Comments.countDocuments(query);
-
-    const totalPages = Math.ceil(totalComments / limit);
-
     const skip = (page - 1) * limit;
 
     let sortOptions = {};
@@ -60,16 +52,21 @@ exports.getAllComments = async (req, res, next) => {
       sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
     }
 
-    const comments = await Comments.find(query)
+    const comments = await Comments.find({ query, productId })
       .populate("product")
       .populate("user")
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
 
+    const totalComments = await Comments.countDocuments({ query, productId });
+
+    const totalPages = Math.ceil(totalComments / limit);
+
     res.status(200).json({
       success: true,
       comments,
+      totalComments,
       totalPages,
     });
   } catch (err) {
