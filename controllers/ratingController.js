@@ -15,6 +15,7 @@ const addRating = async (req, res, next) => {
 
 const getAllRating = async (req, res, next) => {
   try {
+    const productId = req.params;
     let { user, searchQuery, sortBy, sortOrder, page, limit } = req.query;
     user = user || "";
     searchQuery = searchQuery || "";
@@ -48,7 +49,7 @@ const getAllRating = async (req, res, next) => {
       sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
     }
 
-    const ratings = await Rating.find(query)
+    const ratings = await Rating.find({ query, productId })
       .populate("product")
       .populate("user")
       .sort(sortOptions)
@@ -56,11 +57,12 @@ const getAllRating = async (req, res, next) => {
       .limit(limit);
 
     // Calculate total number of ratings for pagination
-    const totalRatings = await Rating.countDocuments(query);
+    const totalRatings = await Rating.countDocuments({ query, productId });
     const totalPages = Math.ceil(totalRatings / limit);
     res.status(201).json({
       success: true,
       ratings,
+      totalRatings,
       totalPages,
     });
   } catch (err) {

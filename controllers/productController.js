@@ -46,10 +46,15 @@ exports.getAllProducts = async (req, res) => {
     }
 
     //pagination...
-    const resultPerPage = 10;
+    const resultPerPage = 9;
     const currentPage = parseInt(req.query.page) || 1;
     const skip = resultPerPage * (currentPage - 1);
+
     const productCount = await Product.countDocuments();
+
+    //total number of pages...
+    const totalPages = Math.ceil(productCount / resultPerPage);
+
     const products = await Product.find({ ...keyword, ...filter })
       .limit(resultPerPage)
       .skip(skip);
@@ -58,6 +63,7 @@ exports.getAllProducts = async (req, res) => {
       success: true,
       products,
       productCount,
+      totalPages,
     });
   } catch (err) {
     console.log(err);

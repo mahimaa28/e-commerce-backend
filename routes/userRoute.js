@@ -13,14 +13,18 @@ const {
   getUsers,
   preVerifyUser,
 } = require("../controllers/userController");
-const { isAuthenticatedUser, authorizedRoles } = require("../middlewares/auth");
+const {
+  isAuthenticatedUser,
+  authorizedSuperAdmin,
+  authorizedSeller,
+} = require("../middlewares/auth");
 const router = express.Router();
 
 router.route("/registerUser").post(registerUser);
 router.route("/verifyUser").post(preVerifyUser);
 router.route("/verifyUser/:token").get(verifyUser);
 router.route("/loginUser").post(loginUser);
-router.route("/logoutUser").get(logoutUser);
+router.route("/logoutUser").get(isAuthenticatedUser, logoutUser);
 router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
@@ -28,9 +32,14 @@ router.route("/updatePassword").put(isAuthenticatedUser, updatePassword);
 router.route("/updateUser").put(isAuthenticatedUser, updateUser);
 router
   .route("/getUserDetails/:id")
-  .get(isAuthenticatedUser, authorizedRoles, userDetails);
+  .get(
+    isAuthenticatedUser,
+    authorizedSuperAdmin,
+    authorizedSeller,
+    userDetails
+  );
 router
   .route("/getAllUsers")
-  .get(isAuthenticatedUser, authorizedRoles, getUsers);
+  .get(isAuthenticatedUser, authorizedSuperAdmin, authorizedSeller, getUsers);
 
 module.exports = router;

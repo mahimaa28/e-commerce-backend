@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { reset } = require("nodemon");
 
-const userSchema = new mongoose.Schema({
+const sellerSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: [true, "Please enter your first name"],
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "user",
+    default: "seller",
   },
   email: {
     type: String,
@@ -36,17 +36,39 @@ const userSchema = new mongoose.Schema({
     minLength: [8, "Password should be atleast 8 characters"],
     select: false,
   },
-  avatar: {
-    public_id: {
+  companyName: {
+    type: String,
+    required: [true, "Please enter your company's name"],
+    default: "",
+  }, // Name of the seller's company
+  companyRegistrationNumber: {
+    type: String,
+    required: [true, "Please enter your company's registration number"],
+    default: "",
+  }, // Registration number of the seller's company
+  companyAddress: {
+    street: {
       type: String,
-      // required: true
+      default: "",
     },
-    url: {
+    city: {
       type: String,
-      // required: true
+      default: "",
+    },
+    state: {
+      type: String,
+      default: "",
+    },
+    country: {
+      type: String,
+      default: "",
+    },
+    postalCode: {
+      type: String,
+      default: "",
     },
   },
-  address: {
+  sellerAddress: {
     street: {
       type: String,
       default: "",
@@ -70,31 +92,9 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
+    required: [true, "Please enter your contact number"],
     default: "",
-  },
-  dateOfBirth: Date,
-  gender: {
-    type: String,
-    enum: ["male", "female", "other"],
-  },
-  cart: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Cart",
-    },
-  ],
-  wishlist: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-    },
-  ],
-  orders: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
-    },
-  ],
+  }, // Phone number of the seller
 
   // createdAt: {
   //   type: Date,
@@ -111,7 +111,7 @@ const userSchema = new mongoose.Schema({
 
 //hashing the password
 
-userSchema.pre("save", async function (req, res, next) {
+sellerSchema.pre("save", async function (req, res, next) {
   if (!this.isModified("password")) {
     return next;
   }
@@ -119,19 +119,23 @@ userSchema.pre("save", async function (req, res, next) {
 });
 
 //JWT Token
-// userSchema.methods.getJWTToken = function () {
-//   return jwt.sign({ id: this._id }, `${process.env.JWT_SECRET}`, {
-//     expiresIn: `${process.env.JWT_EXPIRE}`,
-//   });
+// sellerSchema.methods.getJWTToken = function () {
+//   return jwt.sign(
+//     { id: this._id, role: this.role },
+//     `${process.env.JWT_SECRET}`,
+//     {
+//       expiresIn: `${process.env.JWT_EXPIRE}`,
+//     }
+//   );
 // };
 
 //Compare the password
-userSchema.methods.comparePassword = async function (enteredPassword) {
+sellerSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 //Reset the password, Generating Password Reset Token
-userSchema.methods.getResetPasswordToken = function () {
+sellerSchema.methods.getResetPasswordToken = function () {
   //Generating token
   const resetToken = crypto.randomBytes(10).toString("hex");
 
@@ -146,4 +150,4 @@ userSchema.methods.getResetPasswordToken = function () {
   return resetToken;
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("Seller", sellerSchema);

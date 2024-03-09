@@ -1,72 +1,82 @@
-const User = require("../models/userModel");
+const Seller = require("../models/sellerModel");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../services/emailServices");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-//Register an User -------------------
-exports.registerUser = async (req, res, next) => {
+//Register an seller -------------------
+exports.registerSeller = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
-
-    const c1 = await User.findOne({ email });
+    const {
+      firstName,
+      lastName,
+      email,
+      role,
+      password,
+      companyName,
+      companyRegistrationNumber,
+      companyAddress,
+      sellerAddress,
+      phoneNumber,
+    } = req.body;
+    // console.log("in register selller");
+    const c1 = await Seller.findOne({ email });
     if (c1) {
       return res
         .status(500)
         .json({ success: false, message: "something went wrong" });
     }
 
-    const user = await User.create({
+    const seller = await Seller.create({
       firstName,
       lastName,
+      role,
       email,
       password,
-      avatar: {
-        public_id: "tmp sample id",
-        url: "tmpProfilePicUrl",
-      },
+      companyName,
+      companyRegistrationNumber,
+      companyAddress,
+      sellerAddress,
+      phoneNumber,
     });
-
-    const loginURL = `http://localhost:3000/registration/${token}`;
     sendMail({
       from: "EcommXpress@gmail.com",
-      to: user.email,
-      subject: "Created Your Account",
-      text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you join our community.
-      \n\nGet started with your new account: ${loginURL}
-      \nIf you have any questions or need assistance, feel free to reach out to our support team.
-      \n\nThanks,
-      \nThe Ecomm Express Team`,
+      to: seller.email,
+      subject: "Created Your Seller Account",
+      text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you join our community.\n\n
+        \nIf you have any questions or need assistance, feel free to reach out to our support team.
+        \n\nThanks,
+        \nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
         message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you join our community.
-        <br><br>Get started with your new account: ${loginURL} <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
-        <br><br>Thanks,<br>The Ecomm Express Team`,
+          <br><br>Get started with your new account:<br><br>If you have any questions or need assistance, feel free to reach out to our support team.
+          <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
     })
       .then(() => {
         return res.status(201).json({
           success: true,
           message: "email has been sent, user has been created",
-          data: user,
+          data: seller,
         });
       })
       .catch((error) => {
         console.log(error);
         return res.status(500).json({ error: "Error in sending email." });
       });
-    console.log(user.email);
+    console.log(seller.email);
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-//PreVerification of an user -----------------
-exports.preVerifyUser = async (req, res, next) => {
+//PreVerification of an seller-----------------
+exports.preVerifySeller = async (req, res, next) => {
   try {
     const { firstName, email } = req.body;
 
-    const c1 = await User.findOne({ email });
+    const c1 = await Seller.findOne({ email });
     if (c1) {
       return res
         .status(500)
@@ -96,13 +106,13 @@ exports.preVerifyUser = async (req, res, next) => {
       subject: "Verify Your Email",
       text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you.
       \n\nPlease follow the link below to verify your email and get started with your new account:
-      \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
+      // \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
       \n\nIf you have any questions or need assistance, feel free to reach out to our support team.
       \n\nThanks,\nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
         message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you.
         <br><br>Please follow the link below to verify your email and get started with your new account:
-        <br><br><a href="http://localhost:4000/api/v1/user/verifyUser/${token}">Verify Email</a>
+        // <br><br>${token}
         <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
         <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
@@ -123,8 +133,9 @@ exports.preVerifyUser = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
-//Verify an user ----------------
-exports.verifyUser = async (req, res, next) => {
+
+//Verify an seller ----------------
+exports.verifySeller = async (req, res, next) => {
   try {
     const { token } = req.params;
     console.log(token);
@@ -145,9 +156,9 @@ exports.verifyUser = async (req, res, next) => {
   }
 };
 
-//Login user -------------------
+//Login seller -------------------
 
-exports.loginUser = async (req, res, next) => {
+exports.loginSeller = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -160,16 +171,16 @@ exports.loginUser = async (req, res, next) => {
         })
       ); //Bad req
     }
-    const user = await User.findOne({ email }).select("+password");
-    console.log(user);
-    if (!user) {
+    const seller = await Seller.findOne({ email }).select("+password");
+    console.log(seller);
+    if (!seller) {
       return next(
         res
           .status(401)
           .json({ success: false, message: "Invalid email or password" })
       ); //unauth req
     }
-    const isPasswordMatched = await user.comparePassword(password);
+    const isPasswordMatched = await seller.comparePassword(password);
     if (!isPasswordMatched) {
       return res
         .status(401)
@@ -177,16 +188,16 @@ exports.loginUser = async (req, res, next) => {
       //unauth req
     }
     console.log(isPasswordMatched);
-    // sendToken(user, 200, res);
-    sendToken(req, 200, res, user, "user");
+    // sendTokenSeller(seller, 200, res);
+    sendToken(req, 200, res, seller, "seller");
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-//Logout User  -------------
-exports.logoutUser = async (req, res, next) => {
+//Logout Seller -------------
+exports.logoutSeller = async (req, res, next) => {
   try {
     res.cookie("token", null, {
       expiresIn: new Date(Date.now()),
@@ -206,17 +217,17 @@ exports.logoutUser = async (req, res, next) => {
 //Reset password
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) {
+    const seller = await Seller.findOne({ email: req.body.email });
+    if (!seller) {
       return res.status(400).json({ error: "User does not exist" });
     }
 
     // Generate and store password reset token
-    const resetToken = user.getResetPasswordToken();
-    await user.save({ validateBeforeSave: false });
+    const resetToken = seller.getResetPasswordToken();
+    await seller.save({ validateBeforeSave: false });
 
     // Construct reset password URL
-    const resetPasswordUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetPasswordUrl = `${resetToken}`;
 
     // Send email with reset password link
     sendMail({
@@ -231,7 +242,7 @@ exports.forgotPassword = async (req, res, next) => {
       .then(() => {
         return res.status(200).json({
           success: true,
-          message: `An email has been sent to ${user.email} with instructions to reset your password`,
+          message: `An email has been sent to ${seller.email} with instructions to reset your password`,
         });
       })
       .catch((error) => {
@@ -255,12 +266,12 @@ exports.resetPassword = async (req, res, next) => {
       .update(req.params.token)
       .digest("hex");
 
-    const user = await User.findOne({
+    const seller = await Seller.findOne({
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() },
     });
 
-    if (!user) {
+    if (!seller) {
       return res.status(400).json({ error: "reset password token is invalid" });
     }
 
@@ -269,17 +280,17 @@ exports.resetPassword = async (req, res, next) => {
         .status(400)
         .json({ error: "password doesn't match, please confirm" });
     }
-    user.password = req.body.password;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+    seller.password = req.body.password;
+    seller.resetPasswordToken = undefined;
+    seller.resetPasswordExpire = undefined;
 
-    await user.save();
-    // sendToken(user, 200, res);
-    sendToken(req, 200, res, user, "user");
+    await seller.save();
+    // sendTokenSeller(seller, 200, res);
+    sendToken(req, 200, res, seller, "seller");
   } catch (err) {
-    User.resetPasswordToken = undefined;
-    User.resetPasswordExpire = undefined;
-    await User.save({ validateBeforeSave: false });
+    Seller.resetPasswordToken = undefined;
+    Seller.resetPasswordExpire = undefined;
+    await Seller.save({ validateBeforeSave: false });
     console.log(err);
     return res
       .status(500)
@@ -287,18 +298,18 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
-//Get user details
-exports.getUserDetails = async (req, res, next) => {
+//Get seller details
+exports.getSellerDetails = async (req, res, next) => {
   try {
-    console.log(req.user._id);
-    const user = await User.findById(req.user._id);
-    console.log(user);
-    if (!user) {
+    console.log(req.seller._id);
+    const seller = await Seller.findById(req.seller._id);
+    console.log(seller);
+    if (!seller) {
       return res.status(400).json({ error: "something went wrong" });
     }
     res.status(200).json({
       success: true,
-      user,
+      seller,
     });
   } catch (err) {
     console.log(err);
@@ -306,12 +317,14 @@ exports.getUserDetails = async (req, res, next) => {
   }
 };
 
-// update user password
+// update seller password
 exports.updatePassword = async (req, res, next) => {
   try {
-    console.log(req.user);
-    const user = await User.findById(req.user.id).select("+password");
-    const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
+    console.log(req.seller);
+    const seller = await Seller.findById(req.seller.id).select("+password");
+    const isPasswordMatched = await seller.comparePassword(
+      req.body.oldPassword
+    );
     if (!isPasswordMatched) {
       return res
         .status(400)
@@ -324,93 +337,10 @@ exports.updatePassword = async (req, res, next) => {
         .json({ success: false, message: "Please confirm password" });
     }
 
-    user.password = req.body.newPassword;
-    await user.save();
-    // sendToken(user, 200, res);
-    sendToken(req, 200, res, user, "user");
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
-
-// update user
-exports.updateUser = async (req, res, next) => {
-  try {
-    const {
-      firstName,
-      lastName,
-      avatar,
-      address,
-      phoneNumber,
-      dateOfBirth,
-      gender,
-      cart,
-      wishlist,
-      orders,
-    } = req.body;
-
-    // Find the user by ID
-    let user = await User.findById(req.user._id);
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // Update user fields
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.avatar = avatar;
-    user.address = address;
-    user.phoneNumber = phoneNumber;
-    user.dateOfBirth = dateOfBirth;
-    user.gender = gender;
-    user.cart = cart;
-    user.wishlist = wishlist;
-    user.orders = orders;
-
-    // Save the updated user
-    console.log(user);
-    await user.save();
-    sendToken(req, 200, res, user, "user");
-    // sendToken(user, 200, res);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
-
-//get users -----------Admin
-exports.getUsers = async (req, res, next) => {
-  try {
-    const users = await User.find();
-    const totalUsers = await User.countDocuments();
-
-    res.status(200).json({
-      success: true,
-      users,
-      totalUsers,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
-
-//get single user details -----------Admin
-exports.userDetails = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(400).json({ error: "something went wrong" });
-    }
-    res.status(200).json({
-      success: true,
-      user,
-    });
+    seller.password = req.body.newPassword;
+    await seller.save();
+    // sendTokenSeller(seller, 200, res);
+    sendToken(req, 200, res, seller, "seller");
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
