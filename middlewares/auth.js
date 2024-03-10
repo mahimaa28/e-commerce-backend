@@ -104,9 +104,9 @@ exports.isAuthenticatedSeller = async (req, res, next) => {
 // };
 exports.authorizedSeller = async (req, res, next) => {
   try {
-    console.log(`${req.body} yaaaaarrrrr`);
+    console.log(`${req.seller.role} yaaaaarrrrr`);
     // Check if the user's role is in the authorized roles
-    if (req.user.role !== "seller") {
+    if (req.seller.role !== "seller") {
       console.log("ruivbefuivbfeoub");
       return res.status(401).json({
         success: false,
