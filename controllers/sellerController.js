@@ -234,9 +234,9 @@ exports.forgotPassword = async (req, res, next) => {
       from: "EcommXpress@gmail.com",
       to: req.body.email,
       subject: "Reset Password Token",
-      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetPasswordUrl}\n\n`,
+      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetToken}\n\n`,
       html: require("../services/emailTemplate")({
-        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br><a href="${resetPasswordUrl}">Reset Password</a><br><br>`,
+        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br>${resetToken}`,
       }),
     })
       .then(() => {
@@ -299,7 +299,7 @@ exports.resetPassword = async (req, res, next) => {
 };
 
 //Get seller details
-exports.getSellerDetails = async (req, res, next) => {
+exports.getDetails = async (req, res, next) => {
   try {
     console.log(req.seller._id);
     const seller = await Seller.findById(req.seller._id);
@@ -341,6 +341,84 @@ exports.updatePassword = async (req, res, next) => {
     await seller.save();
     // sendTokenSeller(seller, 200, res);
     sendToken(req, 200, res, seller, "seller");
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+//get seller details --SuperAdmin
+exports.getSellerDetails = async (req, res, next) => {
+  try {
+    console.log(req.seller);
+    const seller = await Seller.findById(req.params.id);
+    console.log(seller);
+    if (!seller) {
+      return res.status(400).json({ error: "something went wrong" });
+    }
+    res.status(200).json({
+      success: true,
+      seller,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+//get sellers -----------SuperAdmin
+exports.getSellers = async (req, res, next) => {
+  try {
+    const sellers = await Seller.find();
+    const totalSellers = await Seller.countDocuments();
+
+    res.status(200).json({
+      success: true,
+      sellers,
+      totalSellers,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+// update seller
+exports.updateSeller = async (req, res, next) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      companyName,
+      companyRegistrationNumber,
+      companyAddress,
+      sellerAddress,
+      phoneNumber,
+    } = req.body;
+
+    // Find the user by ID
+    let seller = await Seller.findById(req.seller.id);
+
+    if (!seller) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update seller fields
+    seller.firstName = firstName;
+    seller.lastName = lastName;
+    seller.companyName = companyName;
+    seller.companyRegistrationNumber = companyRegistrationNumber;
+    seller.companyAddress = companyAddress;
+    seller.sellerAddress = sellerAddress;
+    seller.phoneNumber = phoneNumber;
+    // Save the updated seller
+    console.log(seller);
+    await seller.save();
+    sendToken(req, 200, res, seller, "seller");
+    // sendToken(user, 200, res);
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });

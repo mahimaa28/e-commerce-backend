@@ -5,6 +5,13 @@ const {
   verifySeller,
   loginSeller,
   logoutSeller,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+  getSellerDetails,
+  getDetails,
+  getSellers,
+  updateSeller,
 } = require("../controllers/sellerController");
 const {
   isAuthenticatedUser,
@@ -19,12 +26,17 @@ router.route("/verifySeller").post(preVerifySeller);
 router.route("/verifySeller/:token").get(verifySeller);
 router.route("/loginSeller").post(loginSeller);
 router.route("/logoutSeller").get(isAuthenticatedSeller, logoutSeller);
-// router
-//   .route("/password/forgot")
-//   .post(authorizedSuperAdmin, authorizedSeller, forgotPassword);
-// router
-//   .route("/password/reset/:token")
-//   .put(authorizedSuperAdmin, authorizedSeller, resetPassword);
+router.route("/password/forgot").post(forgotPassword);
+router.route("/password/reset/:token").put(resetPassword);
+router.route("/updatePassword").put(isAuthenticatedSeller, updatePassword);
+router
+  .route("/getSellerDetails/:id")
+  .get(isAuthenticatedSeller, authorizedSeller, getSellerDetails);
+router.route("/me").get(isAuthenticatedSeller, authorizedSeller, getDetails);
+router.route("/getSellers").get(isAuthenticatedSeller, getSellers);
+router
+  .route("/updateSeller")
+  .put(isAuthenticatedSeller, authorizedSeller, updateSeller);
 // router
 //   .route("/me")
 //   .get(
