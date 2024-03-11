@@ -27,7 +27,7 @@ exports.registerUser = async (req, res, next) => {
       },
     });
 
-    const loginURL = `http://localhost:3000/registration/${token}`;
+    const loginURL = `http://localhost:3000/loginsignup`;
     sendMail({
       from: "EcommXpress@gmail.com",
       to: user.email,
@@ -96,13 +96,13 @@ exports.preVerifyUser = async (req, res, next) => {
       subject: "Verify Your Email",
       text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you.
       \n\nPlease follow the link below to verify your email and get started with your new account:
-      \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
+      \n\nhttp://localhost:3000/registration/${token}
       \n\nIf you have any questions or need assistance, feel free to reach out to our support team.
       \n\nThanks,\nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
         message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you.
         <br><br>Please follow the link below to verify your email and get started with your new account:
-        <br><br><a href="http://localhost:4000/api/v1/user/verifyUser/${token}">Verify Email</a>
+        <br><br><a href="http://localhost:3000/registration/${token}">Verify Email</a>
         <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
         <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
