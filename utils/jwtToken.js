@@ -24,6 +24,8 @@ const sendToken = (req, StatusCode, res, user, role) => {
   });
 };
 
+module.exports = sendToken;
+
 // const sendToken = (req, StatusCode, res) => {
 //   const token = getJWTToken();
 
@@ -59,4 +61,3 @@ const sendToken = (req, StatusCode, res, user, role) => {
 //     token,
 //   });
 // };
-module.exports = sendToken;

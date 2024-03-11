@@ -17,7 +17,6 @@ const {
   isAuthenticatedUser,
   authorizedSuperAdmin,
   authorizedSeller,
-  isAuthenticatedSeller,
 } = require("../middlewares/auth");
 const router = express.Router();
 
@@ -25,18 +24,20 @@ router.route("/registerSeller").post(registerSeller);
 router.route("/verifySeller").post(preVerifySeller);
 router.route("/verifySeller/:token").get(verifySeller);
 router.route("/loginSeller").post(loginSeller);
-router.route("/logoutSeller").get(isAuthenticatedSeller, logoutSeller);
+router.route("/logoutSeller").get(isAuthenticatedUser, logoutSeller);
 router.route("/password/forgot").post(forgotPassword);
 router.route("/password/reset/:token").put(resetPassword);
-router.route("/updatePassword").put(isAuthenticatedSeller, updatePassword);
+router.route("/updatePassword").put(isAuthenticatedUser, updatePassword);
 router
   .route("/getSellerDetails/:id")
-  .get(isAuthenticatedSeller, authorizedSeller, getSellerDetails);
-router.route("/me").get(isAuthenticatedSeller, authorizedSeller, getDetails);
-router.route("/getSellers").get(isAuthenticatedSeller, getSellers);
+  .get(isAuthenticatedUser, authorizedSeller, getSellerDetails);
+router.route("/me").get(isAuthenticatedUser, authorizedSeller, getDetails);
+router
+  .route("/getSellers")
+  .get(isAuthenticatedUser, authorizedSuperAdmin, getSellers);
 router
   .route("/updateSeller")
-  .put(isAuthenticatedSeller, authorizedSeller, updateSeller);
+  .put(isAuthenticatedUser, authorizedSeller, updateSeller);
 // router
 //   .route("/me")
 //   .get(

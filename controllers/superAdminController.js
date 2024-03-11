@@ -1,85 +1,68 @@
-const Seller = require("../models/sellerModel");
 const Admin = require("../models/superAdminModel");
+const Seller = require("../models/sellerModel");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../services/emailServices");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-//Register an seller -------------------
-exports.registerSeller = async (req, res, next) => {
+//Register an admin -------------------
+exports.registerAdmin = async (req, res, next) => {
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      role,
-      password,
-      companyName,
-      companyRegistrationNumber,
-      companyAddress,
-      sellerAddress,
-      phoneNumber,
-    } = req.body;
-    // console.log("in register selller");
-    const c1 = await Seller.findOne({ email });
+    const { firstName, lastName, email, role, password } = req.body;
+    // console.log("in register Admin");
+    const c1 = await Admin.findOne({ email });
     if (c1) {
       return res
         .status(500)
         .json({ success: false, message: "something went wrong" });
     }
-    const c2 = await Admin.findOne({ email });
+
+    const c2 = await Seller.findOne({ email });
     if (c2) {
       return res
         .status(500)
         .json({ success: false, message: "something went wrong" });
     }
 
-    const seller = await Seller.create({
+    const admin = await Admin.create({
       firstName,
       lastName,
       role,
       email,
       password,
-      companyName,
-      companyRegistrationNumber,
-      companyAddress,
-      sellerAddress,
-      phoneNumber,
     });
     sendMail({
       from: "EcommXpress@gmail.com",
-      to: seller.email,
+      to: admin.email,
       subject: "Created Your Seller Account",
-      text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you join our community.\n\n
-        \nIf you have any questions or need assistance, feel free to reach out to our support team.
-        \n\nThanks,
-        \nThe Ecomm Express Team`,
+      text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you as an admin.\n\n
+          \n\nThanks,
+          \nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
-        message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you join our community.
-          <br><br>Get started with your new account:<br><br>If you have any questions or need assistance, feel free to reach out to our support team.
-          <br><br>Thanks,<br>The Ecomm Express Team`,
+        message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you as an admin.
+            <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
     })
       .then(() => {
         return res.status(201).json({
           success: true,
           message: "email has been sent, user has been created",
-          data: seller,
+          data: admin,
         });
       })
       .catch((error) => {
         console.log(error);
         return res.status(500).json({ error: "Error in sending email." });
       });
-    console.log(seller.email);
+    console.log(admin.email);
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-//PreVerification of an seller-----------------
-exports.preVerifySeller = async (req, res, next) => {
+//PreVerification of an Admin-----------------
+exports.preVerifyAdmin = async (req, res, next) => {
   try {
     const { firstName, email } = req.body;
 
@@ -90,16 +73,13 @@ exports.preVerifySeller = async (req, res, next) => {
         .json({ success: false, message: "something went wrong" });
     }
 
-    // const user = await User.create({
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   password,
-    //   avatar: {
-    //     public_id: "tmp sample id",
-    //     url: "tmpProfilePicUrl",
-    //   },
-    // });
+    const c2 = await Admin.findOne({ email });
+    if (c2) {
+      return res
+        .status(500)
+        .json({ success: false, message: "something went wrong" });
+    }
+
     const token = jwt.sign(
       {
         data: "Token Data",
@@ -112,16 +92,16 @@ exports.preVerifySeller = async (req, res, next) => {
       to: email,
       subject: "Verify Your Email",
       text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you.
-      \n\nPlease follow the link below to verify your email and get started with your new account:
-      // \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
-      \n\nIf you have any questions or need assistance, feel free to reach out to our support team.
-      \n\nThanks,\nThe Ecomm Express Team`,
+        \n\nPlease follow the link below to verify your email and get started with your new account:
+        // \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
+        \n\nIf you have any questions or need assistance, feel free to reach out to our support team.
+        \n\nThanks,\nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
         message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you.
-        <br><br>Please follow the link below to verify your email and get started with your new account:
-        // <br><br>${token}
-        <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
-        <br><br>Thanks,<br>The Ecomm Express Team`,
+          <br><br>Please follow the link below to verify your email and get started with your new account:
+          // <br><br>${token}
+          <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
+          <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
     })
       .then(() => {
@@ -141,8 +121,8 @@ exports.preVerifySeller = async (req, res, next) => {
   }
 };
 
-//Verify an seller ----------------
-exports.verifySeller = async (req, res, next) => {
+//Verify an admin ----------------
+exports.verifyAdmin = async (req, res, next) => {
   try {
     const { token } = req.params;
     console.log(token);
@@ -163,9 +143,9 @@ exports.verifySeller = async (req, res, next) => {
   }
 };
 
-//Login seller -------------------
+//Login Admin -------------------
 
-exports.loginSeller = async (req, res, next) => {
+exports.loginAdmin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -178,16 +158,16 @@ exports.loginSeller = async (req, res, next) => {
         })
       ); //Bad req
     }
-    const seller = await Seller.findOne({ email }).select("+password");
-    console.log(seller);
-    if (!seller) {
+    const admin = await Admin.findOne({ email }).select("+password");
+    console.log(admin);
+    if (!admin) {
       return next(
         res
           .status(401)
           .json({ success: false, message: "Invalid email or password" })
       ); //unauth req
     }
-    const isPasswordMatched = await seller.comparePassword(password);
+    const isPasswordMatched = await admin.comparePassword(password);
     if (!isPasswordMatched) {
       return res
         .status(401)
@@ -196,15 +176,15 @@ exports.loginSeller = async (req, res, next) => {
     }
     console.log(isPasswordMatched);
     // sendTokenSeller(seller, 200, res);
-    sendToken(req, 200, res, seller, "seller");
+    sendToken(req, 200, res, admin, "admin");
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-//Logout Seller -------------
-exports.logoutSeller = async (req, res, next) => {
+//Logout Admin -------------
+exports.logoutAdmin = async (req, res, next) => {
   try {
     res.cookie("token", null, {
       expiresIn: new Date(Date.now()),
@@ -224,14 +204,14 @@ exports.logoutSeller = async (req, res, next) => {
 //Reset password
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const seller = await Seller.findOne({ email: req.body.email });
-    if (!seller) {
-      return res.status(400).json({ error: "User does not exist" });
+    const admin = await Admin.findOne({ email: req.body.email });
+    if (!admin) {
+      return res.status(400).json({ error: "Admin does not exist" });
     }
 
     // Generate and store password reset token
-    const resetToken = seller.getResetPasswordToken();
-    await seller.save({ validateBeforeSave: false });
+    const resetToken = admin.getResetPasswordToken();
+    await admin.save({ validateBeforeSave: false });
 
     // Construct reset password URL
     const resetPasswordUrl = `${resetToken}`;
@@ -249,7 +229,7 @@ exports.forgotPassword = async (req, res, next) => {
       .then(() => {
         return res.status(200).json({
           success: true,
-          message: `An email has been sent to ${seller.email} with instructions to reset your password`,
+          message: `An email has been sent to ${admin.email} with instructions to reset your password`,
         });
       })
       .catch((error) => {
@@ -264,40 +244,41 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-//reset Password, changing password
 exports.resetPassword = async (req, res, next) => {
   try {
-    //creating token hash
+    // Creating token hash
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(req.params.token)
       .digest("hex");
 
-    const seller = await Seller.findOne({
+    // Find admin instance from the database
+    const admin = await Admin.findOne({
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() },
     });
 
-    if (!seller) {
-      return res.status(400).json({ error: "reset password token is invalid" });
+    if (!admin) {
+      return res.status(400).json({ error: "Reset password token is invalid" });
     }
 
     if (req.body.password !== req.body.confirmPassword) {
       return res
         .status(400)
-        .json({ error: "password doesn't match, please confirm" });
+        .json({ error: "Password doesn't match, please confirm" });
     }
-    seller.password = req.body.password;
-    seller.resetPasswordToken = undefined;
-    seller.resetPasswordExpire = undefined;
 
-    await seller.save();
-    // sendTokenSeller(seller, 200, res);
-    sendToken(req, 200, res, seller, "seller");
+    // Update admin password and reset token fields
+    admin.password = req.body.password;
+    admin.resetPasswordToken = undefined;
+    admin.resetPasswordExpire = undefined;
+
+    // Save the changes to the database
+    await admin.save();
+
+    // Send token response
+    sendToken(req, 200, res, admin, "admin");
   } catch (err) {
-    Seller.resetPasswordToken = undefined;
-    Seller.resetPasswordExpire = undefined;
-    await Seller.save({ validateBeforeSave: false });
     console.log(err);
     return res
       .status(500)
@@ -305,18 +286,18 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
-//Get seller details
-exports.getDetails = async (req, res, next) => {
+//Get Admin details
+exports.getAdminDetails = async (req, res, next) => {
   try {
-    console.log(req.seller._id);
-    const seller = await Seller.findById(req.seller._id);
-    console.log(seller);
-    if (!seller) {
+    console.log(req.admin._id);
+    const admin = await Admin.findById(req.Admin._id);
+    console.log(admin);
+    if (!admin) {
       return res.status(400).json({ error: "something went wrong" });
     }
     res.status(200).json({
       success: true,
-      seller,
+      admin,
     });
   } catch (err) {
     console.log(err);
@@ -324,14 +305,12 @@ exports.getDetails = async (req, res, next) => {
   }
 };
 
-// update seller password
+// update admin password
 exports.updatePassword = async (req, res, next) => {
   try {
-    console.log(req.seller);
-    const seller = await Seller.findById(req.seller.id).select("+password");
-    const isPasswordMatched = await seller.comparePassword(
-      req.body.oldPassword
-    );
+    console.log(req.admin);
+    const admin = await Admin.findById(req.admin.id).select("+password");
+    const isPasswordMatched = await admin.comparePassword(req.body.oldPassword);
     if (!isPasswordMatched) {
       return res
         .status(400)
@@ -344,88 +323,38 @@ exports.updatePassword = async (req, res, next) => {
         .json({ success: false, message: "Please confirm password" });
     }
 
-    seller.password = req.body.newPassword;
-    await seller.save();
+    admin.password = req.body.newPassword;
+    await admin.save();
     // sendTokenSeller(seller, 200, res);
-    sendToken(req, 200, res, seller, "seller");
+    sendToken(req, 200, res, admin, "admin");
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-//get seller details --SuperAdmin
-exports.getSellerDetails = async (req, res, next) => {
+// update admin password
+exports.updatePassword = async (req, res, next) => {
   try {
-    console.log(req.seller);
-    const seller = await Seller.findById(req.params.id);
-    console.log(seller);
-    if (!seller) {
-      return res.status(400).json({ error: "something went wrong" });
+    console.log(req.admin);
+    const admin = await Admin.findById(req.admin.id).select("+password");
+    const isPasswordMatched = await admin.comparePassword(req.body.oldPassword);
+    if (!isPasswordMatched) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid old password" });
+      //unauth req
     }
-    res.status(200).json({
-      success: true,
-      seller,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
-
-//get sellers -----------SuperAdmin
-exports.getSellers = async (req, res, next) => {
-  try {
-    const sellers = await Seller.find();
-    const totalSellers = await Seller.countDocuments();
-
-    res.status(200).json({
-      success: true,
-      sellers,
-      totalSellers,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
-
-// update seller
-exports.updateSeller = async (req, res, next) => {
-  try {
-    const {
-      firstName,
-      lastName,
-      companyName,
-      companyRegistrationNumber,
-      companyAddress,
-      sellerAddress,
-      phoneNumber,
-    } = req.body;
-
-    // Find the user by ID
-    let seller = await Seller.findById(req.seller.id);
-
-    if (!seller) {
-      return res.status(400).json({
-        success: false,
-        message: "User not found",
-      });
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please confirm password" });
     }
 
-    // Update seller fields
-    seller.firstName = firstName;
-    seller.lastName = lastName;
-    seller.companyName = companyName;
-    seller.companyRegistrationNumber = companyRegistrationNumber;
-    seller.companyAddress = companyAddress;
-    seller.sellerAddress = sellerAddress;
-    seller.phoneNumber = phoneNumber;
-    // Save the updated seller
-    console.log(seller);
-    await seller.save();
-    sendToken(req, 200, res, seller, "seller");
-    // sendToken(user, 200, res);
+    admin.password = req.body.newPassword;
+    await admin.save();
+    // sendTokenSeller(seller, 200, res);
+    sendToken(req, 200, res, admin, "admin");
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
