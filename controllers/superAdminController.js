@@ -332,31 +332,3 @@ exports.updatePassword = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
-
-// update admin password
-exports.updatePassword = async (req, res, next) => {
-  try {
-    console.log(req.admin);
-    const admin = await Admin.findById(req.admin.id).select("+password");
-    const isPasswordMatched = await admin.comparePassword(req.body.oldPassword);
-    if (!isPasswordMatched) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid old password" });
-      //unauth req
-    }
-    if (req.body.newPassword !== req.body.confirmPassword) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Please confirm password" });
-    }
-
-    admin.password = req.body.newPassword;
-    await admin.save();
-    // sendTokenSeller(seller, 200, res);
-    sendToken(req, 200, res, admin, "admin");
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
