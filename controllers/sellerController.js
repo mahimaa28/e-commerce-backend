@@ -106,13 +106,13 @@ exports.preVerifySeller = async (req, res, next) => {
       subject: "Verify Your Email",
       text: `Hi ${firstName},\n\nWelcome to Ecomm Express! We're thrilled to have you.
       \n\nPlease follow the link below to verify your email and get started with your new account:
-      // \n\nhttp://localhost:4000/api/v1/user/verifyUser/${token}
+      // \n\nhttp://localhost:3000/registration-seller/${token}
       \n\nIf you have any questions or need assistance, feel free to reach out to our support team.
       \n\nThanks,\nThe Ecomm Express Team`,
       html: require("../services/emailTemplate")({
         message: `Hi ${firstName},<br><br>Welcome to Ecomm Express! We're thrilled to have you.
         <br><br>Please follow the link below to verify your email and get started with your new account:
-        // <br><br>${token}
+        // <br><br>http://localhost:3000/registration-seller/${token}
         <br><br>If you have any questions or need assistance, feel free to reach out to our support team.
         <br><br>Thanks,<br>The Ecomm Express Team`,
       }),
@@ -227,16 +227,16 @@ exports.forgotPassword = async (req, res, next) => {
     await seller.save({ validateBeforeSave: false });
 
     // Construct reset password URL
-    const resetPasswordUrl = `${resetToken}`;
+    const resetPasswordUrl = `http://localhost:3000/reset-password-seller/${resetToken}`;
 
     // Send email with reset password link
     sendMail({
       from: "EcommXpress@gmail.com",
       to: req.body.email,
       subject: "Reset Password Token",
-      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetToken}\n\n`,
+      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetPasswordUrl}\n\n`,
       html: require("../services/emailTemplate")({
-        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br>${resetToken}`,
+        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br>${resetPasswordUrl}`,
       }),
     })
       .then(() => {
