@@ -1,4 +1,5 @@
 const Seller = require("../models/sellerModel");
+const Admin = require("../models/superAdminModel");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../services/emailServices");
 const crypto = require("crypto");
@@ -22,6 +23,12 @@ exports.registerSeller = async (req, res, next) => {
     // console.log("in register selller");
     const c1 = await Seller.findOne({ email });
     if (c1) {
+      return res
+        .status(500)
+        .json({ success: false, message: "something went wrong" });
+    }
+    const c2 = await Admin.findOne({ email });
+    if (c2) {
       return res
         .status(500)
         .json({ success: false, message: "something went wrong" });
