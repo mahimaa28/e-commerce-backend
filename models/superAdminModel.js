@@ -71,20 +71,20 @@ superAdminSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 //Reset the password, Generating Password Reset Token
-superAdminSchema.methods.getResetPasswordToken = function () {
-  //Generating token
-  const resetToken = crypto.randomBytes(10).toString("hex");
+// superAdminSchema.methods.resetPasswordToken = function () {
+//   //Generating token
+//   const resetToken = crypto.randomBytes(10).toString("hex");
 
-  //Hashing and adding to user schema
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+//   //Hashing and adding to user schema
+//   this.resetPasswordToken = crypto
+//     .createHash("sha256")
+//     .update(resetToken)
+//     .digest("hex");
 
-  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+//   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
-  return resetToken;
-};
+//   return resetToken;
+// };
 
 //Super Admin is referred in this app as ADMIN, don't get confused.
 module.exports = mongoose.model("Admin", superAdminSchema);

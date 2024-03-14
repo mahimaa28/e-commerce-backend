@@ -63,9 +63,9 @@ exports.authorizedSeller = async (req, res, next) => {
 
 exports.authorizedSuperAdmin = (req, res, next) => {
   try {
-    console.log(`${req.user.role} yaaaaarrrrr`);
+    console.log(`${req.admin.role} yaaaaarrrrr`);
     // Check if the user's role is in the authorized roles
-    if (req.user.role !== "admin") {
+    if (req.admin.role !== "admin") {
       console.log("ruivbefuivbfeoub");
       return res.status(401).json({
         success: false,
