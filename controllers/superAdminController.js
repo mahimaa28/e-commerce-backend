@@ -5,23 +5,41 @@ const sendMail = require("../services/emailServices");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
+//reset password token
+const getResetPasswordToken = function () {
+  //Generating token
+  const resetToken = crypto.randomBytes(10).toString("hex");
+
+  //Hashing and adding to user schema
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+  return resetToken;
+};
+
 //Register an admin -------------------
 exports.registerAdmin = async (req, res, next) => {
   try {
+    console.log("here in register admin", req.body);
     const { firstName, lastName, email, role, password } = req.body;
     // console.log("in register Admin");
     const c1 = await Admin.findOne({ email });
     if (c1) {
       return res
         .status(500)
-        .json({ success: false, message: "something went wrong" });
+        .json({ success: false, message: "admin already exists" });
     }
 
     const c2 = await Seller.findOne({ email });
     if (c2) {
-      return res
-        .status(500)
-        .json({ success: false, message: "something went wrong" });
+      return res.status(500).json({
+        success: false,
+        message: "email id already exists(seller's).",
+      });
     }
 
     const admin = await Admin.create({
@@ -210,7 +228,7 @@ exports.forgotPassword = async (req, res, next) => {
     }
 
     // Generate and store password reset token
-    const resetToken = admin.getResetPasswordToken();
+    const resetToken = getResetPasswordToken();
     await admin.save({ validateBeforeSave: false });
 
     // Construct reset password URL
@@ -246,18 +264,20 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.resetPassword = async (req, res, next) => {
   try {
+    console.log("hi");
     // Creating token hash
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(req.params.token)
       .digest("hex");
-
+    console.log(resetPasswordToken);
     // Find admin instance from the database
     const admin = await Admin.findOne({
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() },
     });
 
+    console.log(admin);
     if (!admin) {
       return res.status(400).json({ error: "Reset password token is invalid" });
     }
@@ -290,7 +310,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.getAdminDetails = async (req, res, next) => {
   try {
     console.log(req.admin._id);
-    const admin = await Admin.findById(req.Admin._id);
+    const admin = await Admin.findById(req.admin._id);
     console.log(admin);
     if (!admin) {
       return res.status(400).json({ error: "something went wrong" });
