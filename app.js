@@ -27,7 +27,7 @@ app.use("/api/v1/product", product);
 app.use(
   "/api/v1/inventory",
   isAuthenticatedUser,
-  authorizedSuperAdmin,
+  // authorizedSuperAdmin,
   authorizedSeller,
   inventory
 );

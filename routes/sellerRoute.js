@@ -38,40 +38,5 @@ router
 router
   .route("/updateSeller")
   .put(isAuthenticatedUser, authorizedSeller, updateSeller);
-// router
-//   .route("/me")
-//   .get(
-//     isAuthenticatedUser,
-//     authorizedSuperAdmin,
-//     authorizedSeller,
-//     getSellerDetails
-//   );
-// router
-//   .route("/updatePassword")
-//   .put(
-//     isAuthenticatedUser,
-//     authorizedSuperAdmin,
-//     authorizedSeller,
-//     updatePassword
-//   );
-// router
-//   .route("/updateSelller")
-//   .put(
-//     isAuthenticatedUser,
-//     authorizedSuperAdmin,
-//     authorizedSeller,
-//     updateSeller
-//   );
-// router
-//   .route("/getSellerDetails/:id")
-//   .get(
-//     isAuthenticatedUser,
-//     authorizedSuperAdmin,
-//     authorizedSeller,
-//     sellerDetails
-//   );
-// router
-//   .route("/getAllSellers")
-//   .get(isAuthenticatedUser, authorizedSuperAdmin, getSellers);
 
 module.exports = router;

@@ -4,7 +4,7 @@ const Product = require("../models/productModel");
 
 exports.createProduct = async (req, res, next) => {
   try {
-    req.body.user = req.user.id;
+    req.body.seller = req.seller.id;
     const product = await Product.create(req.body);
     res.status(201).json({
       success: true,
