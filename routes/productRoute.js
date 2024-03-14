@@ -17,28 +17,13 @@ const router = express.Router();
 router.route("/products").get(getAllProducts);
 router
   .route("/createProduct")
-  .post(
-    isAuthenticatedUser,
-    authorizedSuperAdmin,
-    authorizedSeller,
-    createProduct
-  );
+  .post(isAuthenticatedUser, authorizedSeller, createProduct);
 router
   .route("/updateProduct/:id")
-  .put(
-    isAuthenticatedUser,
-    authorizedSuperAdmin,
-    authorizedSeller,
-    updateProduct
-  );
+  .put(isAuthenticatedUser, authorizedSeller, updateProduct);
 router
   .route("/deleteProduct/:id")
-  .delete(
-    isAuthenticatedUser,
-    authorizedSuperAdmin,
-    authorizedSeller,
-    deleteProduct
-  );
+  .delete(isAuthenticatedUser, authorizedSeller, deleteProduct);
 router.route("/getProductDetails/:id").get(getProductDetails);
 
 module.exports = router;
