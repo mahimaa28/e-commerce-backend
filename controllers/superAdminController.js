@@ -214,16 +214,16 @@ exports.forgotPassword = async (req, res, next) => {
     await admin.save({ validateBeforeSave: false });
 
     // Construct reset password URL
-    const resetPasswordUrl = `${resetToken}`;
+    const resetPasswordUrl = `http://localhost:300/reset-password-admin${resetToken}`;
 
     // Send email with reset password link
     sendMail({
       from: "EcommXpress@gmail.com",
       to: req.body.email,
       subject: "Reset Password Token",
-      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetToken}\n\n`,
+      text: `Hi! You have requested to reset your password. Click the link below to reset your password:\n\n${resetPasswordUrl}\n\n`,
       html: require("../services/emailTemplate")({
-        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br>${resetToken}`,
+        message: `Hi! You have requested to reset your password. Click the link below to reset your password:<br><br>${resetPasswordUrl}`,
       }),
     })
       .then(() => {

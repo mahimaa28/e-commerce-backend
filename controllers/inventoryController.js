@@ -71,6 +71,7 @@ exports.getInventory = async (req, res, next) => {
     const inventoryCount = await Inventory.countDocuments();
     const currentPage = parseInt(req.query.page) || 1;
     const skip = resultPerPage * (currentPage - 1);
+    const totalPages = Math.ceil(inventoryCount / resultPerPage);
     const inventory = await Inventory.find({ ...keyword, ...filter })
       .limit(resultPerPage)
       .skip(skip);
@@ -78,6 +79,7 @@ exports.getInventory = async (req, res, next) => {
       success: true,
       inventory,
       inventoryCount,
+      totalPages
     });
   } catch (err) {
     console.log(err);
