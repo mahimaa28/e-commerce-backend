@@ -403,7 +403,7 @@ exports.getUsers = async (req, res, next) => {
 //get single user details -----------Admin
 exports.userDetails = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById({ _id: req.params.id });
     if (!user) {
       return res.status(400).json({ error: "something went wrong" });
     }
