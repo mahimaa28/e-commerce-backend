@@ -32,14 +32,9 @@ router.route("/updatePassword").put(isAuthenticatedUser, updatePassword);
 router.route("/updateUser").put(isAuthenticatedUser, updateUser);
 router
   .route("/getUserDetails/:id")
-  .get(
-    isAuthenticatedUser,
-    authorizedSuperAdmin,
-    authorizedSeller,
-    userDetails
-  );
+  .get(isAuthenticatedUser, authorizedSuperAdmin, userDetails);
 router
   .route("/getAllUsers")
-  .get(isAuthenticatedUser, authorizedSuperAdmin, authorizedSeller, getUsers);
+  .get(isAuthenticatedUser, authorizedSuperAdmin, getUsers);
 
 module.exports = router;
