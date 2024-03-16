@@ -79,3 +79,22 @@ exports.authorizedSuperAdmin = (req, res, next) => {
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
+
+exports.authorizedRoles = (req, res, next) => {
+  try {
+    console.log(`${req.admin.role} yaaaaarrrrr`);
+    // Check if the user's role is in the authorized roles
+    if (req.admin.role !== "admin" && req.seller.role !== "seller") {
+      console.log("ruivbefuivbfeoub");
+      return res.status(401).json({
+        success: false,
+        message: "You are not authorized to access this resource",
+      });
+    }
+    // If the user's role is authorized, proceed to the next middleware
+    next();
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};

@@ -30,16 +30,14 @@ router.route("/password/reset/:token").put(resetPassword);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/updatePassword").put(isAuthenticatedUser, updatePassword);
 router.route("/updateUser").put(isAuthenticatedUser, updateUser);
-router
-  .route("/getUserDetails/:id")
-  .get(
-    isAuthenticatedUser,
-    authorizedSuperAdmin,
-    authorizedSeller,
-    userDetails
-  );
+router.route("/getUserDetails/:id").get(
+  isAuthenticatedUser,
+  authorizedSuperAdmin,
+  // authorizedSeller,
+  userDetails
+);
 router
   .route("/getAllUsers")
-  .get(isAuthenticatedUser, authorizedSuperAdmin, authorizedSeller, getUsers);
+  .get(isAuthenticatedUser, authorizedSuperAdmin, getUsers);
 
 module.exports = router;
