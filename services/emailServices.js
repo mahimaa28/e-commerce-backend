@@ -1,6 +1,4 @@
-"use strict";
 const nodemailer = require("nodemailer");
-const jwt = require("jsonwebtoken");
 
 module.exports = async ({ from, to, subject, text, html }) => {
   let transporter = nodemailer.createTransport({
