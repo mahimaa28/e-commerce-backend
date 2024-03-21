@@ -291,7 +291,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.getUserDetails = async (req, res, next) => {
   try {
     console.log(req.user._id);
-    const user = await User.findById(req.user._id);
+    const user = await User.findOne({ _id: req.user._id });
     console.log(user);
     if (!user) {
       return res.status(400).json({ error: "something went wrong" });
@@ -310,7 +310,7 @@ exports.getUserDetails = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
   try {
     console.log(req.user);
-    const user = await User.findById(req.user.id).select("+password");
+    const user = await User.findOne({ _id: req.user.id }).select("+password");
     const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
     if (!isPasswordMatched) {
       return res
@@ -349,9 +349,9 @@ exports.updateUser = async (req, res, next) => {
       wishlist,
       orders,
     } = req.body;
-
+    console.log(req.user._id);
     // Find the user by ID
-    let user = await User.findById(req.user._id);
+    let user = await User.findOne({ _id: req.user._id });
 
     if (!user) {
       return res.status(400).json({
@@ -373,9 +373,11 @@ exports.updateUser = async (req, res, next) => {
     user.orders = orders;
 
     // Save the updated user
-    console.log(user);
+    // console.log(user);
     await user.save();
+    // console.log("afterrrrrrrr", user);
     sendToken(req, 200, res, user, "user");
+    // console.log(user);
     // sendToken(user, 200, res);
   } catch (err) {
     console.log(err);
@@ -403,7 +405,8 @@ exports.getUsers = async (req, res, next) => {
 //get single user details -----------Admin
 exports.userDetails = async (req, res, next) => {
   try {
-    const user = await User.findById({ _id: req.params.id });
+    const user = await User.findOne({ _id: req.params.id });
+
     if (!user) {
       return res.status(400).json({ error: "something went wrong" });
     }

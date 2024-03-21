@@ -310,7 +310,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.getAdminDetails = async (req, res, next) => {
   try {
     console.log(req.admin._id);
-    const admin = await Admin.findById(req.admin._id);
+    const admin = await Admin.findOne({ _id: req.admin._id });
     console.log(admin);
     if (!admin) {
       return res.status(400).json({ error: "something went wrong" });
@@ -329,7 +329,9 @@ exports.getAdminDetails = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
   try {
     console.log(req.admin);
-    const admin = await Admin.findById(req.admin.id).select("+password");
+    const admin = await Admin.findOne({ _id: req.admin.id }).select(
+      "+password"
+    );
     const isPasswordMatched = await admin.comparePassword(req.body.oldPassword);
     if (!isPasswordMatched) {
       return res

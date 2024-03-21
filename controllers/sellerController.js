@@ -309,7 +309,7 @@ exports.resetPassword = async (req, res, next) => {
 exports.getDetails = async (req, res, next) => {
   try {
     console.log(req.seller._id);
-    const seller = await Seller.findById(req.seller._id);
+    const seller = await Seller.findOne({ _id: req.seller._id });
     console.log(seller);
     if (!seller) {
       return res.status(400).json({ error: "something went wrong" });
@@ -328,7 +328,9 @@ exports.getDetails = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
   try {
     console.log(req.seller);
-    const seller = await Seller.findById(req.seller.id).select("+password");
+    const seller = await Seller.findOne({ _id: req.seller.id }).select(
+      "+password"
+    );
     const isPasswordMatched = await seller.comparePassword(
       req.body.oldPassword
     );
@@ -358,7 +360,7 @@ exports.updatePassword = async (req, res, next) => {
 exports.getSellerDetails = async (req, res, next) => {
   try {
     console.log(req.seller);
-    const seller = await Seller.findById(req.params.id);
+    const seller = await Seller.findOne({ _id: req.params.id });
     console.log(seller);
     if (!seller) {
       return res.status(400).json({ error: "something went wrong" });
@@ -404,7 +406,7 @@ exports.updateSeller = async (req, res, next) => {
     } = req.body;
 
     // Find the user by ID
-    let seller = await Seller.findById(req.seller.id);
+    let seller = await Seller.findOne({ _id: req.seller.id });
 
     if (!seller) {
       return res.status(400).json({
