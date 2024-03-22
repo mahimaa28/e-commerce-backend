@@ -37,6 +37,10 @@ exports.getAllProducts = async (req, res) => {
       filter.category = req.query.category;
     }
 
+    if (req.query.subCategory) {
+      filter.subCategory = req.query.subCategory;
+    }
+
     if (req.query.minPrice) {
       filter.price = { ...filter.price, $gte: parseInt(req.query.minPrice) };
     }

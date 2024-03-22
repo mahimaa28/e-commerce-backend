@@ -376,7 +376,7 @@ exports.updateUser = async (req, res, next) => {
     // console.log(user);
     await user.save();
     // console.log("afterrrrrrrr", user);
-    sendToken(req, 200, res, user, "user");
+    res.status(200).json({ success: true, user });
     // console.log(user);
     // sendToken(user, 200, res);
   } catch (err) {

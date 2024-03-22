@@ -49,10 +49,6 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Comments",
   },
-  addedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -60,6 +56,14 @@ const productSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: new Date(),
+  },
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Seller",
+  },
+  inventory: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Inventory",
   },
 });
 
