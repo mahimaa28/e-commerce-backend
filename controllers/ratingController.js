@@ -13,52 +13,25 @@ const addRating = async (req, res, next) => {
   }
 };
 
-const getAllRating = async (req, res, next) => {
+const getAllRating = async (req, res) => {
   try {
-    const productId = req.params;
-    let { user, searchQuery, sortBy, sortOrder, page, limit } = req.query;
-    user = user || "";
-    searchQuery = searchQuery || "";
-    sortBy = sortBy || "";
-    sortOrder = sortOrder || "asc";
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 10;
+    const productId = req.params.productId;
+    let query = { "product": productId }; // Filter comments by productId
+    
+     //pagination...
+     const resultPerPage = 9;
+     const currentPage = parseInt(req.query.page) || 1;
+     const skip = resultPerPage * (currentPage - 1);
 
-    const skip = (page - 1) * limit;
-
-    let query = {};
-
-    // If userId is provided, add it to the query
-    if (user) {
-      query.user = user;
-    }
-
-    // If there's a search query, add it to the query
-    if (searchQuery) {
-      query.$or = [
-        { "productId.name": { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on product name
-        { star: { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on comment text
-        { "user.name": { $regex: new RegExp(searchQuery, "i") } }, // Case-insensitive search on user name
-      ];
-    }
-
-    let sortOptions = {};
-
-    // Sort by specified field
-    if (sortBy) {
-      sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
-    }
-
-    const ratings = await Rating.find({ query, productId })
+    const ratings = await Rating.find(query)
       .populate("product")
       .populate("user")
-      .sort(sortOptions)
       .skip(skip)
-      .limit(limit);
+      .limit(resultPerPage);
 
     // Calculate total number of ratings for pagination
-    const totalRatings = await Rating.countDocuments({ query, productId });
-    const totalPages = Math.ceil(totalRatings / limit);
+    const totalRatings = await Rating.countDocuments (query);
+    const totalPages = Math.ceil(totalRatings / resultPerPage);
     res.status(201).json({
       success: true,
       ratings,

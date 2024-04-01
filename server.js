@@ -7,7 +7,7 @@ const connectDatabase = require("./config/database");
 
 dotenv.config({ path: "./config.env" });
 
-const PORT = 7000 || process.env.PORT;
+const PORT = 4000 || process.env.PORT;
 
 const corsOptions = {
   origin: "*",

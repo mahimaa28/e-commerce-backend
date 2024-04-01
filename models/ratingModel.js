@@ -14,7 +14,7 @@ const ratingSchema = new mongoose.Schema({
   star: {
     type: Number,
     required: true,
-    min: 1,
+    // min: 0,
     max: 5,
   },
   createdAt: {

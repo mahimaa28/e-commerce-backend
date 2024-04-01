@@ -16,7 +16,7 @@ router
   .delete(isAuthenticatedUser, deleteComment);
 router
   .route("/getAllProductComments/:productId")
-  .get(isAuthenticatedUser, getAllComments);
-router.route("/viewComment/:commentId").get(isAuthenticatedUser, viewComment);
+  .get(getAllComments);
+router.route("/viewComment/:commentId").get(viewComment);
 
 module.exports = router;

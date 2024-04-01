@@ -16,52 +16,34 @@ exports.addComment = async (req, res, next) => {
   }
 };
 
-exports.getAllComments = async (req, res, next) => {
+exports.getAllComments = async (req, res) => {
   try {
-    let { user, searchQuery, sortBy, sortOrder, page, limit, product } =
-      req.query;
-    user = user || "";
-    searchQuery = searchQuery || "";
-    sortBy = sortBy || "";
-    sortOrder = sortOrder || "asc";
-    page = parseInt(page) || 1;
-    limit = parseInt(limit) || 10;
-
-    const productId = req.params;
-    let query = {};
-
-    // If userId is provided, add it to the query
-    if (user) {
-      query.user = user;
-    }
-
+    const productId = req.params.productId; // Extract productId from request parameters
+    let query = { "product": productId }; // Filter comments by productId
+    
     // If there's a search query, add it to the query
-    if (searchQuery) {
+    if (req.query.searchQuery) {
       query.$or = [
-        { "productId.name": { $regex: searchQuery, $options: "i" } }, // Case-insensitive search on product name
-        { comment: { $regex: searchQuery, $options: "i" } }, // Case-insensitive search on comment text
+        { "product.name": { $regex: req.query.searchQuery, $options: "i" } }, // Case-insensitive search on product name
+        { comment: { $regex: req.query.searchQuery, $options: "i" } }, // Case-insensitive search on comment text
       ];
     }
+    
+     //pagination...
+     const resultPerPage = 9;
+     const currentPage = parseInt(req.query.page) || 1;
+     const skip = resultPerPage * (currentPage - 1);
 
-    const skip = (page - 1) * limit;
 
-    let sortOptions = {};
-
-    // Sort by specified field
-    if (sortBy) {
-      sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
-    }
-
-    const comments = await Comments.find({ query, productId })
+    const comments = await Comments.find(query)
       .populate("product")
       .populate("user")
-      .sort(sortOptions)
       .skip(skip)
-      .limit(limit);
+      .limit(resultPerPage);
 
-    const totalComments = await Comments.countDocuments({ query, productId });
+    const totalComments = await Comments.countDocuments(query);
 
-    const totalPages = Math.ceil(totalComments / limit);
+    const totalPages = Math.ceil(totalComments / resultPerPage);
 
     res.status(200).json({
       success: true,
