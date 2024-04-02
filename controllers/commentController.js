@@ -2,9 +2,9 @@ const Comments = require("../models/commentModel");
 
 exports.addComment = async (req, res, next) => {
   try {
-    let { user, product, content } = req.body;
+    let { user, product, content, star } = req.body;
     console.log(req.body);
-    const comment = new Comments({ user, product, content });
+    const comment = new Comments({ user, product, content, star });
     await comment.save();
     res.status(201).json({
       success: true,
@@ -59,8 +59,7 @@ exports.getAllComments = async (req, res) => {
 
 exports.viewComment = async (req, res, next) => {
   try {
-    const { commentId } = req.params;
-    const comment = await Comments.findOne({ _id: commentId })
+    const comment = await Comments.findOne({ _id:  req.params.commentId })
       .populate("product")
       .populate("user");
     res.status(200).json({
@@ -76,14 +75,21 @@ exports.viewComment = async (req, res, next) => {
 exports.updateComment = async (req, res, next) => {
   try {
     const { commentId } = req.params;
-
-    const comment = await Comments.findOneAndUpdate(
-      { _id: commentId },
-      req.body,
-      {
-        new: true,
-      }
+    let { content, star } = req.body;
+    console.log(commentId)
+    const comment = await Comments.findOne(
+      { _id: commentId }
     );
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+    comment.content = content;
+    comment.star = star;
+
+    await comment.save();
     res.status(200).json({
       success: true,
       comment,

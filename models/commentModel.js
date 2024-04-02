@@ -15,6 +15,12 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  star: {
+    type: Number,
+    required: true,
+    // min: 0,
+    max: 5,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
