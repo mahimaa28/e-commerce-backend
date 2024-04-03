@@ -172,3 +172,35 @@ exports.decreaseProductInCart = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+exports.getCartProducts = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    // Find the cart for the specified user
+    const cart = await Cart.findOne({ userId }).populate("products.product");
+
+    if (!cart) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found",
+      });
+    }
+
+    // Extract product information from the cart
+    const products = cart.products.map((item) => ({
+      _id: item.product._id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.quantity,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
