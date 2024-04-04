@@ -17,6 +17,8 @@ router.route("/updateProduct").put(isAuthenticatedUser, updateProductInCart);
 router
   .route("/decreaseProduct")
   .put(isAuthenticatedUser, decreaseProductInCart);
-router.route("/getAllCartProducts").get(isAuthenticatedUser, getCartProducts);
+router
+  .route("/getAllCartProducts/:userId")
+  .get(isAuthenticatedUser, getCartProducts);
 
 module.exports = router;
