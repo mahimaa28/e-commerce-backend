@@ -175,7 +175,7 @@ exports.decreaseProductInCart = async (req, res) => {
 
 exports.getCartProducts = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.params;
 
     // Find the cart for the specified user
     const cart = await Cart.findOne({ userId }).populate("products.product");
