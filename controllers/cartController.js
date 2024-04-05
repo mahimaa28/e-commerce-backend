@@ -4,6 +4,9 @@ exports.addProductInCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
 
+    // Convert quantity to a number
+    const parsedQuantity = parseInt(quantity);
+
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
@@ -18,10 +21,10 @@ exports.addProductInCart = async (req, res) => {
 
     if (existingProductIndex !== -1) {
       // If product exists, update the quantity
-      cart.products[existingProductIndex].quantity += quantity || 1;
+      cart.products[existingProductIndex].quantity += parsedQuantity || 1;
     } else {
       // If product doesn't exist, add it to the cart
-      cart.products.push({ product: productId, quantity: quantity || 1 });
+      cart.products.push({ product: productId, quantity: parsedQuantity || 1 });
     }
 
     // Save the updated cart
@@ -85,6 +88,9 @@ exports.updateProductInCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
 
+    // Convert quantity to a number
+    const parsedQuantity = parseInt(quantity);
+
     // Find the cart for the specified user
     const cart = await Cart.findOne({ userId });
 
@@ -108,7 +114,7 @@ exports.updateProductInCart = async (req, res) => {
     }
 
     // Update the quantity of the product in the cart
-    cart.products[productIndex].quantity += quantity || 1;
+    cart.products[productIndex].quantity += parsedQuantity || 1;
 
     // Save the updated cart
     await cart.save();
@@ -192,6 +198,9 @@ exports.getCartProducts = async (req, res) => {
       _id: item.product._id,
       name: item.product.name,
       price: item.product.price,
+      description: item.product.description,
+      category: item.product.category,
+      subCategory: item.product.subCategory,
       quantity: item.quantity,
     }));
 
