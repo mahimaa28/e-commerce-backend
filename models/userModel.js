@@ -77,24 +77,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["male", "female", "other"],
   },
-  cart: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Cart",
-    },
-  ],
-  wishlist: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-    },
-  ],
-  orders: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
-    },
-  ],
 
   // createdAt: {
   //   type: Date,

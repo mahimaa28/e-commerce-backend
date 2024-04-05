@@ -1,4 +1,6 @@
 const Cart = require("../models/cartModel");
+const Order = require("../models/orderModel");
+const Product = require("../models/productModel");
 
 exports.addProductInCart = async (req, res) => {
   try {
@@ -203,12 +205,94 @@ exports.getCartProducts = async (req, res) => {
       subCategory: item.product.subCategory,
       quantity: item.quantity,
       category: item.product.category,
-      img: item.product.images[0].url
+      img: item.product.images[0].url,
     }));
 
     return res.status(200).json({
       success: true,
       products,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.checkoutFromCart = async (req, res) => {
+  try {
+    const { userId, shippingInfo, paymentInfo, orderNotes } = req.body;
+
+    // Find the cart for the specified user
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart || cart.products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Cart is empty or not found",
+      });
+    }
+
+    // Initialize total price
+    let totalPrice = 0;
+
+    // Iterate over products in the cart
+    for (const item of cart.products) {
+      // Find the corresponding product
+      const product = await Product.findById(item.product);
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      // Log product price for debugging
+      console.log(`Product ${product._id} price: ${product.price}`);
+
+      // Ensure that product price is available
+      if (!product.price) {
+        return res.status(400).json({
+          success: false,
+          message: "Product price is not available",
+        });
+      }
+
+      // Assign price from the product to the item in the cart
+      item.price = product.price;
+
+      // Log item price for debugging
+      console.log(`Item ${item.product} price: ${item.price}`);
+
+      // Calculate total price
+      totalPrice += item.quantity * product.price;
+    }
+
+    // Log total price for debugging
+    console.log(`Total price: ${totalPrice}`);
+
+    // Create an order
+    const order = new Order({
+      userId,
+      cartId: cart._id,
+      products: cart.products,
+      totalPrice,
+      shippingInfo,
+      paymentInfo,
+      orderNotes,
+    });
+
+    // Save the order
+    await order.save();
+
+    // Clear the cart after successful checkout
+    cart.products = [];
+    await cart.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order placed successfully",
+      order,
     });
   } catch (err) {
     console.error(err);

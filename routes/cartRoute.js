@@ -5,6 +5,7 @@ const {
   updateProductInCart,
   decreaseProductInCart,
   getCartProducts,
+  checkoutFromCart,
 } = require("../controllers/cartController");
 const { isAuthenticatedUser } = require("../middlewares/auth");
 const router = express.Router();
@@ -20,5 +21,6 @@ router
 router
   .route("/getAllCartProducts/:userId")
   .get(isAuthenticatedUser, getCartProducts);
+router.route("/checkoutFromCart").post(isAuthenticatedUser, checkoutFromCart);
 
 module.exports = router;
