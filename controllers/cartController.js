@@ -202,6 +202,8 @@ exports.getCartProducts = async (req, res) => {
       category: item.product.category,
       subCategory: item.product.subCategory,
       quantity: item.quantity,
+      category: item.product.category,
+      img: item.product.images[0].url
     }));
 
     return res.status(200).json({
