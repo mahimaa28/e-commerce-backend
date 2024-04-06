@@ -44,6 +44,7 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 
 exports.authorizedSeller = async (req, res, next) => {
   try {
+    // console.log(`${req.seller} yaaaaarrrrr`);
     console.log(`${req.seller.role} yaaaaarrrrr`);
     // Check if the user's role is in the authorized roles
     if (req.seller.role !== "seller") {
@@ -53,7 +54,6 @@ exports.authorizedSeller = async (req, res, next) => {
         message: "You are not authorized to access this resource",
       });
     }
-    // If the user's role is authorized, proceed to the next middleware
     next();
   } catch (err) {
     console.log(err);

@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Cart = require("../models/cartModel");
 const sendToken = require("../utils/jwtToken");
 const sendMail = require("../services/emailServices");
 const crypto = require("crypto");
@@ -26,6 +27,8 @@ exports.registerUser = async (req, res, next) => {
         url: "tmpProfilePicUrl",
       },
     });
+
+    await Cart.create({ userId: user._id, products: [] });
 
     const loginURL = `http://localhost:3000/loginsignup`;
     sendMail({

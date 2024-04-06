@@ -4,8 +4,34 @@ const Product = require("../models/productModel");
 
 exports.createProduct = async (req, res, next) => {
   try {
-    req.body.seller = req.seller.id;
-    const product = await Product.create(req.body);
+    console.log("tffffffff");
+    // req.body.seller = req.seller.id;
+    // const product = await Product.create(req.body);
+    const {
+      name,
+      description,
+      price,
+      images,
+      category,
+      subCategory,
+      stock,
+      // ratings, comments, createdAt, updatedAt, inventory - these fields are either automatically generated or not required during product creation
+    } = req.body;
+
+    // Create a new product instance
+    const product = new Product({
+      name,
+      description,
+      price,
+      images,
+      category,
+      subCategory,
+      stock,
+      seller: req.seller.id,
+    });
+
+    // Save the product to the database
+    await product.save();
     res.status(201).json({
       success: true,
       product,

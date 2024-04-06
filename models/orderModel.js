@@ -11,24 +11,24 @@ const orderSchema = new mongoose.Schema({
     ref: "Cart", // Reference to the Cart model
     required: true,
   },
-  //   products: [
-  //     {
-  //       product: {
-  //         type: mongoose.Schema.Types.ObjectId,
-  //         ref: "Product", // Reference to the Product model
-  //         required: true,
-  //       },
-  //       quantity: {
-  //         type: Number,
-  //         required: true,
-  //         min: 1, // Ensure quantity is at least 1
-  //       },
-  //       price: {
-  //         type: Number,
-  //         required: true,
-  //       },
-  //     },
-  //   ],
+  products: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product", // Reference to the Product model
+        required: true,
+      },
+      //   quantity: {
+      //     type: Number,
+      //     required: true,
+      //     min: 1, // Ensure quantity is at least 1
+      //   },
+      //   price: {
+      //     type: Number,
+      //     required: true,
+      //   },
+    },
+  ],
   totalPrice: {
     type: Number,
     required: true,

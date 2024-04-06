@@ -21,6 +21,7 @@ const rating = require("./routes/ratingRoute");
 const seller = require("./routes/sellerRoute");
 const admin = require("./routes/superAdminRoute");
 const cart = require("./routes/cartRoute");
+const order = require("./routes/orderRoute");
 //Super Admin is referred in this app as ADMIN, don't get confused.
 
 // routes ---------------------
@@ -38,5 +39,6 @@ app.use("/api/v1/rating", rating);
 app.use("/api/v1/seller", seller);
 app.use("/api/v1/admin", admin);
 app.use("/api/v1/cart", cart);
+app.use("/api/v1/order", order);
 
 module.exports = app;

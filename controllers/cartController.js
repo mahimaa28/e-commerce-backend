@@ -183,11 +183,11 @@ exports.decreaseProductInCart = async (req, res) => {
 
 exports.getCartProducts = async (req, res) => {
   try {
-    const { userId } = req.params;
-
     // Find the cart for the specified user
-    const cart = await Cart.findOne({ userId }).populate("products.product");
-
+    const cart = await Cart.findOne({ userId: req.params.userId }).populate(
+      "products.product"
+    );
+    console.log(cart);
     if (!cart) {
       return res.status(404).json({
         success: false,
@@ -196,17 +196,25 @@ exports.getCartProducts = async (req, res) => {
     }
 
     // Extract product information from the cart
-    const products = cart.products.map((item) => ({
-      _id: item.product._id,
-      name: item.product.name,
-      price: item.product.price,
-      description: item.product.description,
-      category: item.product.category,
-      subCategory: item.product.subCategory,
-      quantity: item.quantity,
-      category: item.product.category,
-      img: item.product.images[0].url,
-    }));
+    const products = cart.products
+      .map((item) => {
+        if (item.product) {
+          // Check if item.product is not null
+          return {
+            _id: item.product._id,
+            name: item.product.name,
+            price: item.product.price,
+            description: item.product.description,
+            category: item.product.category,
+            subCategory: item.product.subCategory,
+            quantity: item.quantity,
+            img: item.product.images[0].url,
+          };
+        } else {
+          return null; // or handle the case where item.product is null
+        }
+      })
+      .filter((product) => product !== null); // Filter out null products
 
     return res.status(200).json({
       success: true,
@@ -224,21 +232,23 @@ exports.checkoutFromCart = async (req, res) => {
 
     // Find the cart for the specified user
     const cart = await Cart.findOne({ userId });
-
+    console.log(cart);
     if (!cart || cart.products.length === 0) {
       return res.status(404).json({
         success: false,
         message: "Cart is empty or not found",
       });
     }
-
+    console.log(cart);
     // Initialize total price
     let totalPrice = 0;
 
     // Iterate over products in the cart
     for (const item of cart.products) {
       // Find the corresponding product
-      const product = await Product.findById(item.product);
+      console.log(item, "in here");
+
+      const product = await Product.findOne({ _id: item.product });
 
       if (!product) {
         return res.status(404).json({
