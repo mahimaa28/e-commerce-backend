@@ -25,7 +25,16 @@ exports.addProductInCart = async (req, res) => {
       // If product exists, update the quantity
       cart.products[existingProductIndex].quantity += parsedQuantity || 1;
     } else {
-      // If product doesn't exist, add it to the cart
+      // If product doesn't exist, check if the product exists in the database
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      // Add the product to the cart with the specified quantity
       cart.products.push({ product: productId, quantity: parsedQuantity || 1 });
     }
 
