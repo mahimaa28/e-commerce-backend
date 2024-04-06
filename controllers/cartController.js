@@ -54,7 +54,7 @@ exports.addProductInCart = async (req, res) => {
 
 exports.deleteProductFromCart = async (req, res) => {
   try {
-    const { userId, productId } = req.body;
+    const { userId, productId } = req.params;
 
     // Find the cart for the specified user
     const cart = await Cart.findOne({ userId });
