@@ -200,8 +200,10 @@ exports.getCartProducts = async (req, res) => {
       .map((item) => {
         if (item.product) {
           // Check if item.product is not null
+          console.log(item, "THISSSS TIME");
           return {
-            _id: item.product._id,
+            _id: item._id,
+            productId: item.product._id,
             name: item.product.name,
             price: item.product.price,
             description: item.product.description,
@@ -303,6 +305,7 @@ exports.checkoutFromCart = async (req, res) => {
       success: true,
       message: "Order placed successfully",
       order,
+      cart,
     });
   } catch (err) {
     console.error(err);
