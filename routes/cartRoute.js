@@ -21,6 +21,6 @@ router
 router
   .route("/getAllCartProducts/:userId")
   .get(isAuthenticatedUser, getCartProducts);
-router.route("/checkoutFromCart").post(isAuthenticatedUser, checkoutFromCart);
+router.route("/checkoutFromCart").post(checkoutFromCart);
 
 module.exports = router;

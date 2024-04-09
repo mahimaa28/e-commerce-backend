@@ -236,29 +236,26 @@ exports.getCartProducts = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
-
 exports.checkoutFromCart = async (req, res) => {
   try {
     const { userId, shippingInfo, paymentInfo, orderNotes } = req.body;
 
     // Find the cart for the specified user
     const cart = await Cart.findOne({ userId });
-    console.log(cart);
+
     if (!cart || cart.products.length === 0) {
       return res.status(404).json({
         success: false,
         message: "Cart is empty or not found",
       });
     }
-    console.log(cart);
-    // Initialize total price
-    let totalPrice = 0;
+
+    // Initialize orders array to hold individual orders
+    const orders = [];
 
     // Iterate over products in the cart
     for (const item of cart.products) {
       // Find the corresponding product
-      console.log(item, "in here");
-
       const product = await Product.findOne({ _id: item.product });
 
       if (!product) {
@@ -268,9 +265,6 @@ exports.checkoutFromCart = async (req, res) => {
         });
       }
 
-      // Log product price for debugging
-      console.log(`Product ${product._id} price: ${product.price}`);
-
       // Ensure that product price is available
       if (!product.price) {
         return res.status(400).json({
@@ -279,42 +273,38 @@ exports.checkoutFromCart = async (req, res) => {
         });
       }
 
-      // Assign price from the product to the item in the cart
-      item.price = product.price;
+      // Create an order for the current item
+      const order = new Order({
+        userId,
+        products: [
+          {
+            product: item.product,
+            quantity: item.quantity,
+            price: product.price,
+          },
+        ],
+        shippingInfo,
+        paymentInfo,
+        orderNotes,
+      });
 
-      // Log item price for debugging
-      console.log(`Item ${item.product} price: ${item.price}`);
+      // Save the order
+      await order.save();
 
-      // Calculate total price
-      totalPrice += item.quantity * product.price;
+      // Add the order to the orders array
+      orders.push(order);
+
+      // Remove the current item from the cart
+      cart.products.pull(item);
     }
 
-    // Log total price for debugging
-    console.log(`Total price: ${totalPrice}`);
-
-    // Create an order
-    const order = new Order({
-      userId,
-      cartId: cart._id,
-      products: cart.products,
-      totalPrice,
-      shippingInfo,
-      paymentInfo,
-      orderNotes,
-    });
-
-    // Save the order
-    await order.save();
-
-    // Clear the cart after successful checkout
-    cart.products = [];
+    // Save the updated cart
     await cart.save();
 
     return res.status(200).json({
       success: true,
-      message: "Order placed successfully",
-      order,
-      cart,
+      message: "Orders placed successfully",
+      orders,
     });
   } catch (err) {
     console.error(err);

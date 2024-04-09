@@ -6,11 +6,6 @@ const orderSchema = new mongoose.Schema({
     ref: "User", // Reference to the User model
     required: true,
   },
-  cartId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Cart", // Reference to the Cart model
-    required: true,
-  },
   products: [
     {
       product: {
@@ -18,15 +13,15 @@ const orderSchema = new mongoose.Schema({
         ref: "Product", // Reference to the Product model
         required: true,
       },
-      //   quantity: {
-      //     type: Number,
-      //     required: true,
-      //     min: 1, // Ensure quantity is at least 1
-      //   },
-      //   price: {
-      //     type: Number,
-      //     required: true,
-      //   },
+      quantity: {
+        type: Number,
+        required: true,
+        min: 1, // Ensure quantity is at least 1
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
     },
   ],
   totalPrice: {
