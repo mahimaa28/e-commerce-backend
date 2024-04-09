@@ -15,15 +15,36 @@ const sendToken = (req, StatusCode, res, user, role) => {
       Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
+    sameSite: "strict",
   };
 
-  res.status(StatusCode).cookie("token", token, options).json({
-    success: true,
-    user,
-    token,
-  });
-};
+  // let cookieName;
 
+  // switch (role) {
+  //   case "user":
+  //     cookieName = "buyerToken";
+  //     break;
+  //   case "seller":
+  //     cookieName = "sellerToken";
+  //     break;
+  //   case "admin":
+  //     cookieName = "adminToken";
+  //     break;
+  //   default:
+  //     cookieName = "defaultToken";
+  // }
+
+  const responseKey = role === "seller" ? "seller" : role;
+
+  res
+    .status(StatusCode)
+    .cookie("token", token, options)
+    .json({
+      success: true,
+      [responseKey]: user,
+      token,
+    });
+};
 module.exports = sendToken;
 
 // const sendToken = (req, StatusCode, res) => {

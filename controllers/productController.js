@@ -1,6 +1,6 @@
 const Product = require("../models/productModel");
 
-// Create Product ----------------- ADMIN
+// Create Product ----------------- SELLER
 
 exports.createProduct = async (req, res, next) => {
   try {
@@ -128,7 +128,7 @@ exports.getProductDetails = async (req, res, next) => {
   }
 };
 
-//Update Product ----------------- ADMIN
+//Update Product ----------------- SELLER
 
 exports.updateProduct = async (req, res, next) => {
   try {
@@ -175,7 +175,7 @@ exports.updateProduct = async (req, res, next) => {
   }
 };
 
-//Delete Product --------------- ADMIN
+//Delete Product ---------------  SELLER
 
 exports.deleteProduct = async (req, res, next) => {
   try {
@@ -194,5 +194,27 @@ exports.deleteProduct = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
+// Get all Products by Seller ID -----------------
+
+exports.getAllProductsBySeller = async (req, res) => {
+  try {
+    const sellerId = req.seller._id;
+
+    // Search function for products by seller ID
+    const products = await Product.find({ seller: sellerId });
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 };

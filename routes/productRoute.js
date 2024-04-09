@@ -5,6 +5,7 @@ const {
   updateProduct,
   deleteProduct,
   getProductDetails,
+  getAllProductsBySeller,
 } = require("../controllers/productController");
 const {
   isAuthenticatedUser,
@@ -25,5 +26,8 @@ router
   .route("/deleteProduct/:id")
   .delete(isAuthenticatedUser, authorizedSeller, deleteProduct);
 router.route("/getProductDetails/:id").get(getProductDetails);
+router
+  .route("/getAllProducts")
+  .get(isAuthenticatedUser, authorizedSeller, getAllProductsBySeller);
 
 module.exports = router;
