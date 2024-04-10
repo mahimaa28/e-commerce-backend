@@ -61,10 +61,6 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Seller",
   },
-  inventory: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Inventory",
-  },
 });
 
 module.exports = mongoose.model("Product", productSchema);

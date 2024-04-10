@@ -36,6 +36,12 @@ const sellerSchema = new mongoose.Schema({
     minLength: [8, "Password should be atleast 8 characters"],
     select: false,
   },
+  inventory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Inventory",
+    },
+  ],
   companyName: {
     type: String,
     required: [true, "Please enter your company's name"],

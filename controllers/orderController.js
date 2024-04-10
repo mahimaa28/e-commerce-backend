@@ -1,5 +1,6 @@
 const Order = require("../models/orderModel");
 const Product = require("../models/productModel");
+
 // Seller-----------------
 exports.updateOrderStatus = async (req, res, next) => {
   try {
@@ -25,22 +26,32 @@ exports.updateOrderStatus = async (req, res, next) => {
   }
 };
 
-exports.getPlacedOrders = async (req, res, next) => {
+// Fetch all orders for products of a particular seller
+exports.getAllOrdersForSeller = async (req, res) => {
   try {
-    const sellerId = req.seller.id;
-    console.log(sellerId);
-    // Find all products associated with the seller
-    const sellerProducts = await Product.find({ seller: sellerId });
-    console.log(sellerProducts);
-    // Extract product IDs
-    const productIds = sellerProducts.map((product) => product._id);
+    const sellerId = req.params.id;
 
-    // Find all orders that contain the seller's products
-    const orders = await Order.find({
-      "products.product": { $in: productIds },
+    // Find all orders where products are associated with the seller
+    const orders = await Order.find({ "products.seller": sellerId });
+
+    res.status(200).json({
+      success: true,
+      orders,
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
-    res.status(200).json({ success: true, orders });
+// get all placed orders for buyer
+exports.getAllOrdersForUser = async (req, res) => {
+  try {
+    const orders = await Order.find({ userId: req.params.id });
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

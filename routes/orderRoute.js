@@ -1,7 +1,8 @@
 const express = require("express");
 const {
   updateOrderStatus,
-  getPlacedOrders,
+  getAllOrdersForUser,
+  getAllOrdersForSeller,
 } = require("../controllers/orderController");
 const {
   isAuthenticatedUser,
@@ -14,7 +15,7 @@ router
   .route("/updateOrderStatus")
   .put(isAuthenticatedUser, authorizedSeller, updateOrderStatus);
 router
-  .route("/getPlacedOrders")
-  .get(isAuthenticatedUser, authorizedSeller, getPlacedOrders);
-
+  .route("/getPlacedOrders/:id")
+  .get(isAuthenticatedUser, authorizedSeller, getAllOrdersForSeller);
+router.route("/getAllOrders/:id").get(isAuthenticatedUser, getAllOrdersForUser);
 module.exports = router;

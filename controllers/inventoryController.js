@@ -1,161 +1,78 @@
 const Inventory = require("../models/inventoryModel");
 
-//Create a new Inventory ---------------- ADMIN
+// Get all inventory items for the seller
 
-exports.createInventory = async (req, res, next) => {
+exports.getAllInventoryItems = async (req, res) => {
   try {
-    const inventory = await Inventory.create(req.body);
-    res.status(201).json({
-      success: true,
-      inventory,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
+    const sellerId = req.params.id;
 
-//Get an Inventory --------------- ADMIN
+    // Find all inventory items associated with the seller
+    const inventoryItems = await Inventory.find({ seller: sellerId }).populate(
+      "product"
+    );
 
-exports.getInventory = async (req, res, next) => {
-  try {
-    //search function for inventory...
-    const keyword = (await req.query.keyword)
-      ? {
-          productCategory: {
-            $regex: req.query.keyword,
-            $options: "i", // case insensitive
-          },
-        }
-      : {};
-    //filter by selling price and costing price...
-    const filter = {};
-    // if (req.query.category) {
-    //     filter.productCategory = req.query.category;
-    // }
-    if (req.query.costPrice) {
-      filter.costPrice = req.query.costPrice;
-    }
-    if (req.query.minCostPrice) {
-      filter.costPrice = {
-        ...filter.costPrice,
-        $gte: parseInt(req.query.minCostPrice),
-      };
-    }
-
-    if (req.query.maxCostPrice) {
-      filter.costPrice = {
-        ...filter.costPrice,
-        $lte: parseInt(req.query.maxCostPrice),
-      };
-    }
-
-    if (req.query.minSellingPrice) {
-      filter.sellingPrice = {
-        ...filter.sellingPrice,
-        $gte: parseInt(req.query.minSellingPrice),
-      };
-    }
-
-    if (req.query.maxSellingPrice) {
-      filter.sellingPrice = {
-        ...filter.sellingPrice,
-        $lte: parseInt(req.query.maxSellingPrice),
-      };
-    }
-
-    console.log({ ...keyword });
-    console.log({ ...filter });
-    //pagination...
-    const resultPerPage = 5;
-    const inventoryCount = await Inventory.countDocuments();
-    const currentPage = parseInt(req.query.page) || 1;
-    const skip = resultPerPage * (currentPage - 1);
-    const totalPages = Math.ceil(inventoryCount / resultPerPage);
-    const inventory = await Inventory.find({ ...keyword, ...filter })
-      .limit(resultPerPage)
-      .skip(skip);
     res.status(200).json({
       success: true,
-      inventory,
-      inventoryCount,
-      totalPages
+      inventoryItems,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-//Get Inventory Details ----------------
+// Get inventory items for a specific seller
 
-exports.getInventoryDetails = async (req, res, next) => {
+exports.getInventoryForSeller = async (req, res) => {
   try {
-    const inventory = await Inventory.findOne({ _id: req.params.id });
-    if (!inventory) {
-      return res.status(500).json({
-        success: false,
-        message: "Inventory not found",
-      });
-    }
+    const sellerId = req.params.sellerId;
+
+    // Find all inventory items associated with the seller
+    const inventoryItems = await Inventory.find({ seller: sellerId }).populate(
+      "product"
+    );
+
     res.status(200).json({
       success: true,
-      inventory,
+      inventoryItems,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-//Update an Inventory --------------- ADMIN
-
-exports.updateInventory = async (req, res, next) => {
+// Update inventory item ----Seller
+exports.updateInventory = async (req, res) => {
   try {
-    const {
-      productCategory,
-      quantity,
-      location,
-      costPrice,
-      sellingPrice,
-      minimumStock,
-      currentStock,
-      reorderQuantity,
-    } = req.body;
-    const inventory = await Inventory.findOne({ _id: req.params.id });
-    if (!inventory) {
-      return res.status(500).json({
-        success: false,
-        message: "Inventory not found",
-      });
-    }
-    inventory.productCategory = productCategory;
-    inventory.quantity = quantity;
-    inventory.location = location;
-    inventory.costPrice = costPrice;
-    inventory.sellingPrice = sellingPrice;
-    inventory.lastUpdated = new Date();
-    inventory.minimumStock = minimumStock;
-    inventory.currentStock = currentStock;
-    inventory.reorderQuantity = reorderQuantity;
+    const inventoryItemId = req.params.id;
+    const { quantity, location } = req.body;
 
-    await inventory.save();
+    // Find the inventory item by ID
+    let inventoryItem = await Inventory.findById(inventoryItemId);
+
+    if (!inventoryItem) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Inventory item not found" });
+    }
+
+    // Update inventory item properties
+    inventoryItem.quantity = quantity;
+    inventoryItem.lastUpdated = Date.now();
+
+    // Save the updated inventory item
+    await inventoryItem.save();
+
     res.status(200).json({
       success: true,
-      inventory,
+      inventoryItem,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-//Delete Inventory --------------- ADMIN
-
-exports.deleteInventory = async (req, res, next) => {
+//Delete Inventory --------------- Seller
+exports.deleteInventory = async (req, res) => {
   try {
     let inventory = await Inventory.findOne({ _id: req.params.id });
     if (!inventory) {
@@ -164,13 +81,24 @@ exports.deleteInventory = async (req, res, next) => {
         message: "Inventory not found",
       });
     }
-    inventory = await inventory.deleteOne({ _id: req.params.id });
+
+    // Find the inventory item by ID and delete it
+    const deletedInventoryItem = await inventory.deleteOne({
+      _id: req.params.id,
+    });
+
+    if (!deletedInventoryItem) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Inventory item not found" });
+    }
+
     res.status(200).json({
       success: true,
-      message: "Inventory deleted successfully",
+      message: "Inventory item deleted successfully",
+      deletedInventoryItem,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "Something went wrong" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

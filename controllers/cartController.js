@@ -236,6 +236,7 @@ exports.getCartProducts = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
 exports.checkoutFromCart = async (req, res) => {
   try {
     const { userId, shippingInfo, paymentInfo, orderNotes } = req.body;
@@ -281,6 +282,7 @@ exports.checkoutFromCart = async (req, res) => {
             product: item.product,
             quantity: item.quantity,
             price: product.price,
+            sellerId: product.seller,
           },
         ],
         shippingInfo,

@@ -22,6 +22,11 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      sellerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Seller", // Reference to the Seller model
+        required: true,
+      },
     },
   ],
   totalPrice: {

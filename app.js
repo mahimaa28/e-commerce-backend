@@ -26,13 +26,7 @@ const order = require("./routes/orderRoute");
 
 // routes ---------------------
 app.use("/api/v1/product", product);
-app.use(
-  "/api/v1/inventory",
-  isAuthenticatedUser,
-  // authorizedSuperAdmin,
-  authorizedSeller,
-  inventory
-);
+app.use("/api/v1/inventory", isAuthenticatedUser, authorizedSeller, inventory);
 app.use("/api/v1/user", user);
 app.use("/api/v1/comment", comment);
 app.use("/api/v1/rating", rating);

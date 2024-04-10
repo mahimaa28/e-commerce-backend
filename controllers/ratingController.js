@@ -16,12 +16,12 @@ const addRating = async (req, res, next) => {
 const getAllRating = async (req, res) => {
   try {
     const productId = req.params.productId;
-    let query = { "product": productId }; // Filter comments by productId
-    
-     //pagination...
-     const resultPerPage = 9;
-     const currentPage = parseInt(req.query.page) || 1;
-     const skip = resultPerPage * (currentPage - 1);
+    let query = { product: productId }; // Filter comments by productId
+
+    //pagination...
+    const resultPerPage = 9;
+    const currentPage = parseInt(req.query.page) || 1;
+    const skip = resultPerPage * (currentPage - 1);
 
     const ratings = await Rating.find(query)
       .populate("product")
@@ -30,13 +30,22 @@ const getAllRating = async (req, res) => {
       .limit(resultPerPage);
 
     // Calculate total number of ratings for pagination
-    const totalRatings = await Rating.countDocuments (query);
+    const totalRatings = await Rating.countDocuments(query);
     const totalPages = Math.ceil(totalRatings / resultPerPage);
+
+    // Calculate average rating
+    const totalRatingSum = ratings.reduce(
+      (acc, rating) => acc + rating.rating,
+      0
+    );
+    const averageRating = totalRatingSum / totalRatings;
+
     res.status(201).json({
       success: true,
       ratings,
       totalRatings,
       totalPages,
+      averageRating,
     });
   } catch (err) {
     console.log(err);
