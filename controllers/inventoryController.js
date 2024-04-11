@@ -57,6 +57,7 @@ exports.updateInventory = async (req, res) => {
 
     // Update inventory item properties
     inventoryItem.quantity = quantity;
+    inventoryItem.location = location;
     inventoryItem.lastUpdated = Date.now();
 
     // Save the updated inventory item
