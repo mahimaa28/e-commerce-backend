@@ -44,7 +44,7 @@ exports.getInventoryForSeller = async (req, res) => {
 exports.updateInventory = async (req, res) => {
   try {
     const inventoryItemId = req.params.id;
-    const { quantity, location } = req.body;
+    const { quantity } = req.body;
 
     // Find the inventory item by ID
     let inventoryItem = await Inventory.findById(inventoryItemId);
@@ -57,7 +57,6 @@ exports.updateInventory = async (req, res) => {
 
     // Update inventory item properties
     inventoryItem.quantity = quantity;
-    inventoryItem.location = location;
     inventoryItem.lastUpdated = Date.now();
 
     // Save the updated inventory item

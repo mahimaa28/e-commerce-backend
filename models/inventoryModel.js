@@ -10,7 +10,6 @@ const inventorySchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please enter product quantity"],
   },
-  location: String,
   createdAt: {
     type: Date,
     default: Date.now(),
