@@ -14,6 +14,7 @@ exports.createProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
+      stock,
       // ratings, comments, createdAt, updatedAt, inventory - these fields are either automatically generated or not required during product creation
     } = req.body;
 
