@@ -138,7 +138,6 @@ exports.updateProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
-      stock,
       createdAt,
       updatedAt,
     } = req.body;
@@ -156,7 +155,6 @@ exports.updateProduct = async (req, res, next) => {
     product.images = images;
     product.category = category;
     product.subCategory = subCategory;
-    product.stock = stock;
     product.numOfComments = numOfComments;
     // product.rating = rating;
     product.numOfReviews = numOfReviews;
