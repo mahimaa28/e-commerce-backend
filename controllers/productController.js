@@ -148,7 +148,7 @@ exports.updateProduct = async (req, res, next) => {
       createdAt,
       updatedAt,
     } = req.body;
-    const { rating, numOfReviews, numOfComments, reviews } = req.body;
+    const { numOfReviews, numOfComments } = req.body;
     let product = await Product.findOne({ _id: req.params.id });
     if (!product) {
       return res.status(404).json({
@@ -163,9 +163,8 @@ exports.updateProduct = async (req, res, next) => {
     product.category = category;
     product.subCategory = subCategory;
     product.numOfComments = numOfComments;
-    // product.rating = rating;
     product.numOfReviews = numOfReviews;
-    // product.reviews = reviews;
+
     product.updatedAt = new Date();
 
     await product.save();
@@ -176,7 +175,6 @@ exports.updateProduct = async (req, res, next) => {
       { quantity },
       { new: true }
     );
-
     res.status(200).json({
       success: true,
       product,
