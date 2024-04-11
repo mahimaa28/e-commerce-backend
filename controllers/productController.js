@@ -7,8 +7,16 @@ exports.createProduct = async (req, res, next) => {
     console.log("tffffffff");
     // req.body.seller = req.seller.id;
     // const product = await Product.create(req.body);
-    const { name, description, price, images, category, subCategory } =
-      req.body;
+    const {
+      name,
+      description,
+      price,
+      images,
+      category,
+      subCategory,
+      stock,
+      // ratings, comments, createdAt, updatedAt, inventory - these fields are either automatically generated or not required during product creation
+    } = req.body;
 
     // Create a new product instance
     const product = new Product({
@@ -21,19 +29,11 @@ exports.createProduct = async (req, res, next) => {
       seller: req.seller.id,
     });
 
-    // Create a corresponding inventory entry with initial quantity of zero
-    const inventory = await Inventory.create({
-      product: product._id,
-      quantity: 0,
-    });
-
     // Save the product to the database
     await product.save();
-
     res.status(201).json({
       success: true,
       product,
-      inventory,
     });
   } catch (err) {
     console.log(err);
@@ -78,6 +78,7 @@ exports.getAllProducts = async (req, res) => {
     const resultPerPage = 9;
     const currentPage = parseInt(req.query.page) || 1;
     const skip = resultPerPage * (currentPage - 1);
+
     const productCount = await Product.countDocuments();
 
     //total number of pages...
@@ -137,10 +138,11 @@ exports.updateProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
+      stock,
       createdAt,
       updatedAt,
     } = req.body;
-    const { numOfReviews, numOfComments } = req.body;
+    const { rating, numOfReviews, numOfComments, reviews } = req.body;
     let product = await Product.findOne({ _id: req.params.id });
     if (!product) {
       return res.status(404).json({
@@ -154,19 +156,14 @@ exports.updateProduct = async (req, res, next) => {
     product.images = images;
     product.category = category;
     product.subCategory = subCategory;
+    product.stock = stock;
     product.numOfComments = numOfComments;
+    // product.rating = rating;
     product.numOfReviews = numOfReviews;
-
+    // product.reviews = reviews;
     product.updatedAt = new Date();
-
     await product.save();
 
-    // Update inventory quantity
-    const inventoryItem = await Inventory.findOneAndUpdate(
-      { product: req.params.id },
-      { quantity },
-      { new: true }
-    );
     res.status(200).json({
       success: true,
       product,

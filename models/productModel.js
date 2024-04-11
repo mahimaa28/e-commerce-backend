@@ -35,6 +35,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter product category"],
   },
+  stock: {
+    type: Number,
+    required: [true, "Please enter product stock"],
+    maxLength: [4, "Stock cannot exceed 4 characters"],
+    default: 1,
+  },
   ratings: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Ratings",
