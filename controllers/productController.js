@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const Inventory = require("../models/inventoryModel");
 
 // Create Product ----------------- SELLER
 
@@ -28,12 +29,18 @@ exports.createProduct = async (req, res, next) => {
       subCategory,
       seller: req.seller.id,
     });
-
     // Save the product to the database
+
+    // Create inventory item for the product
+    const inventoryItem = await Inventory.create({
+      product: product._id,
+      quantity,
+    });
     await product.save();
     res.status(201).json({
       success: true,
       product,
+      inventoryItem,
     });
   } catch (err) {
     console.log(err);
@@ -160,7 +167,15 @@ exports.updateProduct = async (req, res, next) => {
     product.numOfReviews = numOfReviews;
     // product.reviews = reviews;
     product.updatedAt = new Date();
+
     await product.save();
+
+    // Update inventory quantity
+    const inventoryItem = await Inventory.findOneAndUpdate(
+      { product: productId },
+      { quantity },
+      { new: true }
+    );
 
     res.status(200).json({
       success: true,
