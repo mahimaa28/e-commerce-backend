@@ -7,16 +7,8 @@ exports.createProduct = async (req, res, next) => {
     console.log("tffffffff");
     // req.body.seller = req.seller.id;
     // const product = await Product.create(req.body);
-    const {
-      name,
-      description,
-      price,
-      images,
-      category,
-      subCategory,
-      stock,
-      // ratings, comments, createdAt, updatedAt, inventory - these fields are either automatically generated or not required during product creation
-    } = req.body;
+    const { name, description, price, images, category, subCategory } =
+      req.body;
 
     // Create a new product instance
     const product = new Product({
@@ -26,7 +18,6 @@ exports.createProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
-      stock,
       seller: req.seller.id,
     });
 
@@ -179,6 +170,7 @@ exports.updateProduct = async (req, res, next) => {
     res.status(200).json({
       success: true,
       product,
+      inventoryItem,
     });
   } catch (err) {
     console.log(err);

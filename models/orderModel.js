@@ -61,16 +61,10 @@ const orderSchema = new mongoose.Schema({
       required: true,
     },
   },
-  paymentInfo: {
-    paymentMethod: {
-      type: String,
-      required: true,
-    },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "failed"],
-      default: "pending",
-    },
+  paymentStatus: {
+    type: String,
+    enum: ["pending", "paid", "failed"],
+    default: "pending",
   },
   orderNotes: {
     type: String,

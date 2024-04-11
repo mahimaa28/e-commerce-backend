@@ -21,13 +21,13 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 
     // Check the role from the decoded token
     if (decodedData.role === "user") {
-      req.user = await User.findById(decodedData.id);
+      req.user = await User.findOne({ _id: decodedData.id });
       console.log("Authenticated as a regular user:", req.user);
     } else if (decodedData.role === "seller") {
-      req.seller = await Seller.findById(decodedData.id);
+      req.seller = await Seller.findOne({ _id: decodedData.id });
       console.log("Authenticated as a seller:", req.seller);
     } else if (decodedData.role === "admin") {
-      req.admin = await Admin.findById(decodedData.id);
+      req.admin = await Admin.findOne({ _id: decodedData.id });
       console.log("Authenticated as an admin:", req.admin);
     } else {
       return res.status(401).json({
