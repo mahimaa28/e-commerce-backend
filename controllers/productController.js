@@ -25,7 +25,6 @@ exports.createProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
-      stock,
       seller: req.seller.id,
     });
 
@@ -138,11 +137,10 @@ exports.updateProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
-      stock,
       createdAt,
       updatedAt,
     } = req.body;
-    const { rating, numOfReviews, numOfComments, reviews } = req.body;
+    const { numOfReviews, numOfComments } = req.body;
     let product = await Product.findOne({ _id: req.params.id });
     if (!product) {
       return res.status(404).json({
@@ -156,17 +154,23 @@ exports.updateProduct = async (req, res, next) => {
     product.images = images;
     product.category = category;
     product.subCategory = subCategory;
-    product.stock = stock;
     product.numOfComments = numOfComments;
-    // product.rating = rating;
     product.numOfReviews = numOfReviews;
-    // product.reviews = reviews;
+
     product.updatedAt = new Date();
+
     await product.save();
 
+    // Update inventory quantity
+    const inventoryItem = await Inventory.findOneAndUpdate(
+      { product: req.params.id },
+      { quantity },
+      { new: true }
+    );
     res.status(200).json({
       success: true,
       product,
+      inventoryItem,
     });
   } catch (err) {
     console.log(err);
