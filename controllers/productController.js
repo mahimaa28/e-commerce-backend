@@ -171,7 +171,7 @@ exports.updateProduct = async (req, res, next) => {
 
     // Update inventory quantity
     const inventoryItem = await Inventory.findOneAndUpdate(
-      { product: productId },
+      { product: product._id },
       { quantity },
       { new: true }
     );
