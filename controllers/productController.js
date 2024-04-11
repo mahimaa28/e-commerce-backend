@@ -32,12 +32,12 @@ exports.createProduct = async (req, res, next) => {
     });
     // Save the product to the database
 
+    await product.save();
     // Create inventory item for the product
     const inventoryItem = await Inventory.create({
       product: product._id,
-      quantity,
+      quantity: quantity,
     });
-    await product.save();
     res.status(201).json({
       success: true,
       product,
