@@ -13,6 +13,7 @@ exports.createProduct = async (req, res, next) => {
       description,
       price,
       images,
+      quantity,
       category,
       subCategory,
       stock,
@@ -145,6 +146,7 @@ exports.updateProduct = async (req, res, next) => {
       images,
       category,
       subCategory,
+      quantity,
       createdAt,
       updatedAt,
     } = req.body;
