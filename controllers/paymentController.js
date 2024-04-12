@@ -34,8 +34,8 @@ exports.processPayment = async (req, res, next) => {
       payment_method_types: ["card"],
       mode: "payment", //for one time payment, use subscription for subscription
       line_items: lineItems,
-      success_url: "https://example.com/success", // URL to redirect to after successful payment
-      cancel_url: "https://example.com/cancel", // URL to redirect to if the user cancels the payment
+      success_url: "http://localhost:3000/orderPlaced", // URL to redirect to after successful payment
+      cancel_url: "http://localhost:3000/cancel-order", // URL to redirect to if the user cancels the payment
     });
 
     res.status(200).json({
