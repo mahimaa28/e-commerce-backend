@@ -27,6 +27,20 @@ const orderSchema = new mongoose.Schema({
         ref: "Seller", // Reference to the Seller model
         required: true,
       },
+      name: {
+        type: String,
+        required: true,
+      },
+      images: [
+        {
+          type: String,
+          required: true,
+        },
+      ],
+      description: {
+        type: String,
+        required: true,
+      },
     },
   ],
   totalPrice: {
