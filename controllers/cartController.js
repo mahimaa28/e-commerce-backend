@@ -239,7 +239,7 @@ exports.getCartProducts = async (req, res) => {
 
 exports.checkoutFromCart = async (req, res) => {
   try {
-    const { userId, shippingInfo, paymentInfo, orderNotes } = req.body;
+    const { userId, shippingInfo, paymentInfo, totalPrice, orderNotes } = req.body;
 
     // Find the cart for the specified user
     const cart = await Cart.findOne({ userId });
@@ -287,6 +287,7 @@ exports.checkoutFromCart = async (req, res) => {
         ],
         shippingInfo,
         paymentInfo,
+        totalPrice,
         orderNotes,
       });
 
