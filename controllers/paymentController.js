@@ -1,4 +1,6 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(
+  sk_test_51P2fovSBuekwIuDIGkY1waTkY9b70NqmMRFVS7cnEV3AkaWfPGOXYjUpDvhznDZhudULqL19pgTvSr43twTwcgEf00jcp14hI4
+);
 const Order = require("../models/orderModel");
 
 exports.processPayment = async (req, res, next) => {
@@ -45,6 +47,6 @@ exports.processPayment = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
