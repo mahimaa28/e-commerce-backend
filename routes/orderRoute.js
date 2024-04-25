@@ -3,6 +3,7 @@ const {
   updateOrderStatus,
   getAllOrdersForUser,
   getAllOrdersForSeller,
+  getAllOrders,
 } = require("../controllers/orderController");
 const {
   isAuthenticatedUser,
@@ -18,4 +19,7 @@ router
   .route("/getPlacedOrders/:id")
   .get(isAuthenticatedUser, authorizedSeller, getAllOrdersForSeller);
 router.route("/getAllOrders/:id").get(isAuthenticatedUser, getAllOrdersForUser);
+router
+  .route("/getAllOrders")
+  .get(isAuthenticatedUser, authorizedSuperAdmin, getAllOrders);
 module.exports = router;

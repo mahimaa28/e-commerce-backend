@@ -6,43 +6,41 @@ const orderSchema = new mongoose.Schema({
     ref: "User", // Reference to the User model
     required: true,
   },
-  products: [
-    {
-      product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product", // Reference to the Product model
-        required: true,
-      },
-      quantity: {
-        type: Number,
-        required: true,
-        min: 1, // Ensure quantity is at least 1
-      },
-      price: {
-        type: Number,
-        required: true,
-      },
-      sellerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Seller", // Reference to the Seller model
-        required: true,
-      },
-      name: {
-        type: String,
-        required: true,
-      },
-      images: [
-        {
-          type: String,
-          required: true,
-        },
-      ],
-      description: {
-        type: String,
-        required: true,
-      },
+  product: {
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product", // Reference to the Product model
+      required: true,
     },
-  ],
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1, // Ensure quantity is at least 1
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller", // Reference to the Seller model
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    description: {
+      type: String,
+      required: true,
+    },
+  },
   totalPrice: {
     type: Number,
     required: true,

@@ -239,78 +239,59 @@ exports.getCartProducts = async (req, res) => {
 
 exports.checkoutFromCart = async (req, res) => {
   try {
-    const { userId, shippingInfo, paymentInfo, totalPrice, orderNotes } = req.body;
+    const {
+      userId,
+      productId,
+      quantity,
+      shippingInfo,
+      paymentInfo,
+      totalPrice,
+      orderNotes,
+    } = req.body;
 
-    // Find the cart for the specified user
-    const cart = await Cart.findOne({ userId });
+    // Find the product
+    const product = await Product.findOne({ _id: productId });
 
-    if (!cart || cart.products.length === 0) {
+    if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Cart is empty or not found",
+        message: "Product not found",
       });
     }
 
-    // Initialize orders array to hold individual orders
-    const orders = [];
-
-    // Iterate over products in the cart
-    for (const item of cart.products) {
-      // Find the corresponding product
-      const product = await Product.findOne({ _id: item.product });
-
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: "Product not found",
-        });
-      }
-
-      // Ensure that product price is available
-      if (!product.price) {
-        return res.status(400).json({
-          success: false,
-          message: "Product price is not available",
-        });
-      }
-
-      // Create an order for the current item
-      const order = new Order({
-        userId,
-        products: [
-          {
-            product: item.product,
-            quantity: item.quantity,
-            price: product.price,
-            sellerId: product.seller,
-            name: product.name,
-            images: product.images,
-            description: product.description,
-          },
-        ],
-        shippingInfo,
-        paymentInfo,
-        totalPrice,
-        orderNotes,
+    // Ensure that product price is available
+    if (!product.price) {
+      return res.status(400).json({
+        success: false,
+        message: "Product price is not available",
       });
-
-      // Save the order
-      await order.save();
-
-      // Add the order to the orders array
-      orders.push(order);
-
-      // Remove the current item from the cart
-      cart.products.pull(item);
     }
 
-    // Save the updated cart
-    await cart.save();
+    // Create an order for the single product
+    const order = new Order({
+      userId,
+      product: {
+        product: productId,
+        quantity,
+        price: product.price,
+        sellerId: product.seller,
+        name: product.name,
+        images: product.images,
+        description: product.description,
+      },
+      shippingInfo,
+      paymentInfo,
+      totalPrice,
+      orderNotes,
+    });
+
+    // Save the order
+    await order.save();
 
     return res.status(200).json({
       success: true,
-      message: "Orders placed successfully",
-      orders,
+      message: "Order placed successfully",
+      order,
     });
   } catch (err) {
     console.error(err);
