@@ -244,7 +244,7 @@ exports.checkoutFromCart = async (req, res) => {
       productId,
       quantity,
       shippingInfo,
-      paymentInfo,
+      paymentStatus,
       totalPrice,
       orderNotes,
     } = req.body;
@@ -280,7 +280,7 @@ exports.checkoutFromCart = async (req, res) => {
         description: product.description,
       },
       shippingInfo,
-      paymentInfo,
+      paymentStatus,
       totalPrice,
       orderNotes,
     });
