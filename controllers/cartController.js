@@ -250,7 +250,7 @@ exports.checkoutFromCart = async (req, res) => {
     } = req.body;
 
     // Find the product
-    
+
     const product = await Product.findOne({ id: productId });
 
     if (!product) {
@@ -288,6 +288,11 @@ exports.checkoutFromCart = async (req, res) => {
 
     // Save the order
     await order.save();
+
+    await Cart.updateOne(
+      { userId },
+      { $pull: { products: { product: productId } } }
+    );
 
     return res.status(200).json({
       success: true,
