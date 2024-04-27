@@ -250,7 +250,8 @@ exports.checkoutFromCart = async (req, res) => {
     } = req.body;
 
     // Find the product
-    const product = await Product.findOne({ _id: productId });
+    
+    const product = await Product.findOne({ id: productId });
 
     if (!product) {
       return res.status(404).json({

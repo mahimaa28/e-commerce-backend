@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDatabase = require("./config/database");
 
+
 // Config
 
 dotenv.config({ path: "./config.env" });
