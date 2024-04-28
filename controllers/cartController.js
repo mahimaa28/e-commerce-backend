@@ -251,7 +251,7 @@ exports.checkoutFromCart = async (req, res) => {
 
     // Find the product
 
-    const product = await Product.findOne({ id: productId });
+    const product = await Product.findOne({ _id: productId });
 
     if (!product) {
       return res.status(404).json({
@@ -285,7 +285,7 @@ exports.checkoutFromCart = async (req, res) => {
       totalPrice,
       orderNotes,
     });
-
+    console.log(order);
     // Save the order
     await order.save();
 
