@@ -5,6 +5,8 @@ const {
   getAllOrdersForSeller,
   getAllOrders,
   countWeeklySales,
+  getCountOfPaidAndPendingOrders,
+  getCountOfCancelledOrders,
 } = require("../controllers/orderController");
 const {
   isAuthenticatedUser,
@@ -26,4 +28,11 @@ router
 router
   .route("/countWeeklySales")
   .get(isAuthenticatedUser, authorizedSeller, countWeeklySales);
+router
+  .route("/getCountOfPaidAndPendingOrders")
+  .get(isAuthenticatedUser, authorizedSeller, getCountOfPaidAndPendingOrders);
+router
+  .route("/getCountOfCancelledOrders")
+  .get(isAuthenticatedUser, authorizedSeller, getCountOfCancelledOrders);
+
 module.exports = router;
