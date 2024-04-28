@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDatabase = require("./config/database");
 
-
 // Config
 
 dotenv.config({ path: "./config.env" });
@@ -11,7 +10,7 @@ dotenv.config({ path: "./config.env" });
 const PORT = 4000 || process.env.PORT;
 
 const corsOptions = {
-  origin: "*",
+  origin: " http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
   optionsSuccessStatus: 204,
