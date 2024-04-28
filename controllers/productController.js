@@ -37,6 +37,7 @@ exports.createProduct = async (req, res, next) => {
     const inventoryItem = await Inventory.create({
       product: product._id,
       quantity: quantity,
+      seller: req.seller.id,
     });
     res.status(201).json({
       success: true,

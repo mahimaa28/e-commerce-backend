@@ -18,6 +18,10 @@ const inventorySchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Seller",
+  },
 });
 
 module.exports = mongoose.model("Inventory", inventorySchema);
