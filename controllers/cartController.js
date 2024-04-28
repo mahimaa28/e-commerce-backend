@@ -304,3 +304,39 @@ exports.checkoutFromCart = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+exports.getTotalProductsInCarts = async (req, res) => {
+  try {
+    const { sellerId } = req.params; // Seller ID for whom we want to count products
+
+    // Aggregate carts to count products from the specified seller
+    const totalProducts = await Cart.aggregate([
+      { $unwind: "$products" }, // Unwind the products array
+      {
+        $match: {
+          "products.sellerId": sellerId, // Filter products by seller ID
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCount: { $sum: "$products.quantity" }, // Count the quantity of products
+        },
+      },
+    ]);
+
+    // Extract the total count of products from the result
+    const totalCount =
+      totalProducts.length > 0 ? totalProducts[0].totalCount : 0;
+
+    return res.status(200).json({
+      success: true,
+      totalCount,
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};

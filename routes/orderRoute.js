@@ -4,6 +4,7 @@ const {
   getAllOrdersForUser,
   getAllOrdersForSeller,
   getAllOrders,
+  countWeeklySales,
 } = require("../controllers/orderController");
 const {
   isAuthenticatedUser,
@@ -22,4 +23,7 @@ router.route("/getAllOrders/:id").get(isAuthenticatedUser, getAllOrdersForUser);
 router
   .route("/getAllOrders")
   .get(isAuthenticatedUser, authorizedSuperAdmin, getAllOrders);
+router
+  .route("/countWeeklySales")
+  .get(isAuthenticatedUser, authorizedSeller, countWeeklySales);
 module.exports = router;
