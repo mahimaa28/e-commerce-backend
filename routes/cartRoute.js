@@ -7,6 +7,7 @@ const {
   getCartProducts,
   checkoutFromCart,
   getTotalProductsInCarts,
+  getCountOfPaidAndPendingOrders,
 } = require("../controllers/cartController");
 const {
   isAuthenticatedUser,
@@ -30,5 +31,11 @@ router.route("/checkoutFromCart").post(isAuthenticatedUser, checkoutFromCart);
 router
   .route("/getTotalProductsInCarts/:sellerId")
   .get(isAuthenticatedUser, authorizedSeller, getTotalProductsInCarts);
+router
+  .route("/getCountOfPaidAndPendingOrders")
+  .get(isAuthenticatedUser, authorizedSeller, getCountOfPaidAndPendingOrders);
+router
+  .route("/getCountOfCancelledOrders")
+  .get(isAuthenticatedUser, authorizedSeller, getCountOfCancelledOrders);
 
 module.exports = router;

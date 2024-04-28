@@ -340,3 +340,39 @@ exports.getTotalProductsInCarts = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
+
+exports.getCountOfPaidAndPendingOrders = async (req, res) => {
+  try {
+    // Count orders with status "paid" and "pending"
+    const countPaid = await Order.countDocuments({ status: "paid" });
+    const countPending = await Order.countDocuments({ status: "pending" });
+
+    return res.status(200).json({
+      success: true,
+      countPaid,
+      countPending,
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.getCountOfCancelledOrders = async (req, res) => {
+  try {
+    // Count orders with status "paid" and "pending"
+    const countCancelled = await Order.countDocuments({ status: "cancelled" });
+
+    return res.status(200).json({
+      success: true,
+      countCancelled,
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
