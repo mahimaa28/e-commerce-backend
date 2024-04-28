@@ -8,6 +8,7 @@ const {
   checkoutFromCart,
   getTotalProductsInCarts,
   getCountOfPaidAndPendingOrders,
+  getCountOfCancelledOrders,
 } = require("../controllers/cartController");
 const {
   isAuthenticatedUser,
